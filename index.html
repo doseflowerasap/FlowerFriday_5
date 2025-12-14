@@ -6,238 +6,458 @@
     <title>聖誕動物花藝交換派對</title>
     <style>
         /* --- 基礎設定 --- */
-        body { font-family: 'Helvetica', 'Arial', sans-serif; background-color: #fdf5e6; color: #333; margin: 0; padding: 20px; text-align: center; }
-        h1, h2 { color: #2c5e2e; } /* 聖誕綠 */
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .hidden { display: none; }
-        .btn { background-color: #c0392b; color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-size: 16px; margin-top: 20px; }
-        .btn:disabled { background-color: #ccc; cursor: not-allowed; }
-        .btn:hover:not(:disabled) { background-color: #a93226; }
+        body { 
+            font-family: 'Microsoft JhengHei', 'Helvetica', sans-serif; 
+            background-color: #fdf5e6; 
+            color: #4a4a4a; 
+            margin: 0; 
+            padding: 0; 
+            line-height: 1.6;
+        }
+        
+        /* 一頁式容器 */
+        .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            background: white; 
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
 
-        /* --- 步驟 1: 角色選擇 --- */
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; }
-        .card { border: 2px solid #ddd; border-radius: 10px; padding: 10px; cursor: pointer; transition: 0.3s; position: relative; }
-        .card.selected { border-color: #c0392b; background-color: #fadbd8; }
-        .card.disabled { opacity: 0.5; cursor: not-allowed; background-color: #eee; }
-        .card img { width: 100%; height: 80px; object-fit: contain; }
+        /* 標題區 */
+        header {
+            background-color: #2c5e2e;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        h1 { margin: 0; font-size: 24px; letter-spacing: 2px; }
+        .subtitle { font-size: 14px; opacity: 0.9; margin-top: 10px; }
+
+        /* 通用區塊樣式 */
+        section {
+            padding: 30px 20px;
+            border-bottom: 10px solid #fdf5e6;
+        }
+        h2 { 
+            color: #2c5e2e; 
+            font-size: 20px; 
+            margin-bottom: 20px; 
+            border-left: 5px solid #c0392b;
+            padding-left: 10px;
+        }
         
-        /* --- 步驟 3: 花藝實驗室 (互動視窗) --- */
-        .canvas-container { position: relative; width: 100%; height: 350px; background-color: #fffaf0; border: 2px dashed #2c5e2e; margin-bottom: 10px; overflow: hidden; }
-        .flower-assets { display: flex; gap: 10px; overflow-x: auto; padding: 10px 0; border-top: 1px solid #eee; }
-        .asset-item { width: 60px; height: 60px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-        .draggable-item { position: absolute; cursor: move; font-size: 40px; user-select: none; }
+        /* --- 區塊 1: 角色選擇 (列表式) --- */
+        .role-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .role-card {
+            display: flex;
+            align-items: flex-start;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            background: #fff;
+        }
+        .role-card:hover { border-color: #aaa; }
         
-        /* --- 表單 --- */
-        .form-group { text-align: left; margin-bottom: 15px; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        /* 選中狀態 */
+        .role-card.selected { 
+            border-color: #c0392b; 
+            background-color: #fff5f5; 
+            box-shadow: 0 4px 10px rgba(192, 57, 43, 0.2);
+        }
+        /* 已被選走狀態 */
+        .role-card.disabled { 
+            opacity: 0.6; 
+            background-color: #f9f9f9; 
+            cursor: not-allowed; 
+            filter: grayscale(1);
+        }
+        .role-card.disabled::after {
+            content: '(已額滿)';
+            color: red;
+            font-weight: bold;
+            margin-left: auto;
+            font-size: 12px;
+        }
+
+        .role-icon { font-size: 40px; margin-right: 15px; flex-shrink: 0; }
+        .role-info h3 { margin: 0 0 5px 0; font-size: 18px; color: #333; }
+        .role-desc { font-size: 13px; color: #666; margin: 0; text-align: justify; }
+
+        /* --- 區塊 3: 花藝實驗室 --- */
+        .canvas-container { 
+            position: relative; 
+            width: 100%; 
+            height: 350px; 
+            background-color: #fffaf0; 
+            border: 2px dashed #2c5e2e; 
+            border-radius: 10px;
+            margin-bottom: 15px; 
+            overflow: hidden; 
+        }
+        .flower-assets { 
+            display: flex; 
+            gap: 10px; 
+            overflow-x: auto; 
+            padding: 10px 0; 
+        }
+        .asset-item { 
+            width: 50px; height: 50px; 
+            border: 1px solid #ddd; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            flex-shrink: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 24px; 
+            background: #fff;
+        }
+        .draggable-item { position: absolute; cursor: move; font-size: 40px; user-select: none; z-index: 10; }
+
+        /* --- 表單控制 --- */
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; }
+        select, input, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+            background: #fff;
+        }
+        
+        /* 送出按鈕 */
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #c0392b;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4);
+            margin-top: 20px;
+        }
+        .submit-btn:disabled { background-color: #ccc; box-shadow: none; }
+
+        /* 簡單的載入動畫 */
+        .loading-overlay {
+            position: fixed; top:0; left:0; right:0; bottom:0;
+            background: rgba(255,255,255,0.9);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 999;
+            flex-direction: column;
+        }
     </style>
 </head>
 <body>
 
+<div id="loading" class="loading-overlay">
+    <div style="font-size:40px;">🎄</div>
+    <p>正在確認角色名單...</p>
+</div>
+
 <div class="container">
-    <h1>🎄 聖誕花藝交換 🌸</h1>
-    <div id="progress-text">步驟 1 / 5</div>
+    <header>
+        <h1>聖誕動物花藝交換 🌸</h1>
+        <div class="subtitle">選個角色，送出一束獨一無二的花</div>
+    </header>
 
-    <div id="step-1" class="step">
-        <h2>我是誰？</h2>
-        <p>請選擇代表你的動物角色（灰底代表已被選走）</p>
-        <div class="grid" id="avatar-grid">
+    <section id="section-role">
+        <h2>1. 請問你是哪位動物？</h2>
+        <div id="role-list" class="role-list">
             </div>
-        <button class="btn" id="btn-step-1" disabled>下一步</button>
-    </div>
+    </section>
 
-    <div id="step-2" class="step hidden">
-        <h2>交換心願</h2>
-        <p>你希望收到誰配的花？</p>
-        <select id="receive-select" style="padding:10px; width:100%; margin-bottom:20px;">
-            <option value="">請選擇...</option>
+    <section id="section-match">
+        <h2>2. 交換心願</h2>
+        <div class="form-group">
+            <label>你希望收到誰配的花？</label>
+            <select id="receive-select">
+                <option value="">請選擇...</option>
             </select>
-
-        <p>你想把你的花送給誰？</p>
-        <select id="give-select" style="padding:10px; width:100%;">
-            <option value="">請選擇...</option>
+        </div>
+        <div class="form-group">
+            <label>你想把你的花送給誰？</label>
+            <select id="give-select">
+                <option value="">請選擇...</option>
             </select>
-        <button class="btn" id="btn-step-2">下一步</button>
-    </div>
+        </div>
+    </section>
 
-    <div id="step-3" class="step hidden">
-        <h2>🎨 花藝實驗室</h2>
-        <p>點擊下方花材加入畫布，拖曳調整位置</p>
+    <section id="section-flower">
+        <h2>3. 花藝實驗室 🎨</h2>
+        <p style="font-size:13px; color:#666; margin-top:-10px;">點擊下方素材，拖曳佈置你的花束</p>
         
         <div class="canvas-container" id="flower-canvas">
-            <span style="position:absolute; top:40%; left:35%; color:#ccc; pointer-events:none;">在這裡創作</span>
+            <span style="position:absolute; top:45%; width:100%; text-align:center; color:#ccc; pointer-events:none;">
+                在這裡創作<br>(可拖曳移動)
+            </span>
         </div>
 
         <div class="flower-assets">
-            <div class="asset-item" onclick="addFlower('🌹')">🌹</div>
-            <div class="asset-item" onclick="addFlower('🌻')">🌻</div>
-            <div class="asset-item" onclick="addFlower('🌷')">🌷</div>
-            <div class="asset-item" onclick="addFlower('🌿')">🌿</div>
-            <div class="asset-item" onclick="addFlower('🌾')">🌾</div>
-            <div class="asset-item" onclick="addFlower('🎀')">🎀</div>
-            <div class="asset-item" onclick="addFlower('❄️')">❄️</div>
+            <div class="asset-item" onclick="addItem('🌹')">🌹</div>
+            <div class="asset-item" onclick="addItem('🌻')">🌻</div>
+            <div class="asset-item" onclick="addItem('🌷')">🌷</div>
+            <div class="asset-item" onclick="addItem('🌿')">🌿</div>
+            <div class="asset-item" onclick="addItem('🌾')">🌾</div>
+            <div class="asset-item" onclick="addItem('🌸')">🌸</div>
+            <div class="asset-item" onclick="addItem('🍁')">🍁</div>
+            <div class="asset-item" onclick="addItem('🎀')">🎀</div>
+            <div class="asset-item" onclick="addItem('✨')">✨</div>
         </div>
-        
-        <button class="btn" style="background-color: #7f8c8d;" onclick="clearCanvas()">清空重來</button>
-        <button class="btn" id="btn-step-3">完成設計</button>
-    </div>
+        <button onclick="clearCanvas()" style="margin-top:10px; background:none; border:1px solid #ccc; padding:5px 10px; border-radius:15px; font-size:12px;">清空重來</button>
+    </section>
 
-    <div id="step-4" class="step hidden">
-        <h2>✍️ 聖誕祝福 & 資料</h2>
+    <section id="section-info">
+        <h2>4. 祝福與資料</h2>
         <div class="form-group">
             <label>給對方的聖誕祝福：</label>
-            <textarea rows="4" placeholder="寫下暖心的話..."></textarea>
+            <textarea id="msg-input" rows="4" placeholder="寫下暖心的話..."></textarea>
         </div>
-        <hr>
+        <div class="form-group">
+            <label>領花暱稱 (真實姓名或暱稱)：</label>
+            <input type="text" id="name-input" placeholder="例如：小明">
+        </div>
         <div class="form-group">
             <label>匯款帳號末五碼：</label>
-            <input type="text" placeholder="12345">
+            <input type="text" id="pay-input" placeholder="12345">
         </div>
-        <div class="form-group">
-            <label>領花暱稱：</label>
-            <input type="text" placeholder="真實姓名或暱稱">
-        </div>
-        <button class="btn" id="btn-submit">確認送出</button>
-    </div>
 
-    <div id="step-5" class="step hidden">
-        <h2>🎉 報名成功！</h2>
-        <p>感謝你的參與，請記得準時匯款。</p>
-        <p>我們將會把你的心意傳達給對方！</p>
-    </div>
+        <button id="btn-submit" class="submit-btn">確認報名</button>
+    </section>
 </div>
 
 <script>
-    // --- 資料設定 ---
-    const animals = [
-        { id: 'rabbit', name: '溫柔兔子', icon: '🐰', taken: true }, // 模擬已被選走
-        { id: 'zebra', name: '酷酷斑馬', icon: '🦓', taken: false },
-        { id: 'frog', name: '快樂青蛙', icon: '🐸', taken: false },
-        { id: 'lion', name: '霸氣獅子', icon: '🦁', taken: false },
-        { id: 'cat', name: '優雅貓咪', icon: '🐱', taken: false },
-        { id: 'bear', name: '憨厚熊熊', icon: '🐻', taken: false }
+    // ==========================================
+    // ⚠️ 設定區：請換成你的 Google Apps Script 網址
+    // ==========================================
+    const API_URL = "https://script.google.com/macros/s/你的亂碼ID/exec"; 
+
+    // 角色詳細資料 (對應你的圖片)
+    // 注意：id 必須跟 Google Sheet 裡的 role_id 一模一樣
+    const CHARACTER_DESC = [
+        {
+            id: 'rabbit',
+            icon: '🐰',
+            name: '固執的兔子',
+            desc: '有藍色眼睛，不喜歡吃超過八公分的胡蘿蔔，喜歡在雲層很厚的時候上廁所，無聊的時候喜歡算塔羅。'
+        },
+        {
+            id: 'lion',
+            icon: '🦁',
+            name: '浪漫的獅子',
+            desc: '青壯年，有著比大部分獅子長的尾巴。喜歡在樹下乘涼，在乘涼的時候喜歡寫詩，但不會拿筆。'
+        },
+        {
+            id: 'cat',
+            icon: '🐱',
+            name: '精靈的小貓',
+            desc: '有著灰黑色的大理石紋、銳利的眼神，是剛出生不久的貓咪寶寶。最喜歡吃的食物是鮭魚，夢想是可以跳到獅子愛乘涼的樹上，然後從樹上往下看他。'
+        },
+        {
+            id: 'elephant',
+            icon: '🐘',
+            name: '無憂無慮的大象',
+            desc: '生性樂觀、沒有煩惱，所有的動物都喜歡找他談心，但是天生只有三隻腳。有個沒動物知道的秘密技能是會背九九乘法表。'
+        },
+        {
+            id: 'owl',
+            icon: '🦉',
+            name: '少一根莖的貓頭鷹',
+            desc: '長得很帥、喜歡吃辣。最喜歡睡覺的地方是兔子窩邊，如果沒不小心飛錯的話。'
+        },
+        {
+            id: 'penguin',
+            icon: '🐧',
+            name: '熱愛環保的企鵝',
+            desc: '走路很慢、不會游泳。興趣是發明好吃的素食菜單，希望菜單可以獲得固執兔子的認可，也希望有一天可以看到沒有垃圾的海灘。'
+        }
     ];
 
-    let userSelection = {
-        myRole: null,
-        receiveFrom: null,
-        giveTo: null,
-        design: [] 
-    };
-
-    // --- 初始化 ---
-    const avatarGrid = document.getElementById('avatar-grid');
-    const receiveSelect = document.getElementById('receive-select');
-    const giveSelect = document.getElementById('give-select');
-
-    // 渲染角色選項
-    animals.forEach(animal => {
-        // 1. Grid 卡片
-        const div = document.createElement('div');
-        div.className = `card ${animal.taken ? 'disabled' : ''}`;
-        div.innerHTML = `<div style="font-size:40px">${animal.icon}</div><div>${animal.name}</div>`;
-        
-        if (!animal.taken) {
-            div.onclick = () => selectRole(div, animal.id);
-        }
-        avatarGrid.appendChild(div);
-
-        // 2. 下拉選單 (先全部放入，下一步再過濾自己)
-        const option = `<option value="${animal.id}">${animal.icon} ${animal.name}</option>`;
-        receiveSelect.innerHTML += option;
-        giveSelect.innerHTML += option;
-    });
-
-    // --- 邏輯控制 ---
+    let myRole = null;
     
-    // 選擇角色
+    // --- 1. 初始化與讀取資料 ---
+    window.onload = async function() {
+        try {
+            // 從 Google Sheet 抓取目前的被選取狀態
+            const res = await fetch(API_URL);
+            const sheetData = await res.json();
+            
+            // 隱藏 Loading
+            document.getElementById('loading').style.display = 'none';
+
+            // 渲染介面
+            renderRoleList(sheetData);
+            renderSelectOptions();
+
+        } catch (e) {
+            alert("讀取資料失敗，請重新整理頁面");
+            console.error(e);
+        }
+    };
+
+    function renderRoleList(sheetData) {
+        const container = document.getElementById('role-list');
+        container.innerHTML = '';
+
+        CHARACTER_DESC.forEach(char => {
+            // 檢查 Google Sheet 回傳的資料中，這個角色是否被選走 (taken)
+            // 這裡做一個簡單的比對：找 id 相同的
+            const status = sheetData.find(d => d.id === char.id);
+            const isTaken = status ? status.taken : false;
+
+            // 建立卡片 HTML
+            const card = document.createElement('div');
+            card.className = `role-card ${isTaken ? 'disabled' : ''}`;
+            card.onclick = () => {
+                if(!isTaken) selectRole(card, char.id);
+            };
+
+            card.innerHTML = `
+                <div class="role-icon">${char.icon}</div>
+                <div class="role-info">
+                    <h3>${char.name}</h3>
+                    <p class="role-desc">${char.desc}</p>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function renderSelectOptions() {
+        const rSelect = document.getElementById('receive-select');
+        const gSelect = document.getElementById('give-select');
+        
+        CHARACTER_DESC.forEach(char => {
+            const option = `<option value="${char.id}">${char.icon} ${char.name}</option>`;
+            rSelect.innerHTML += option;
+            gSelect.innerHTML += option;
+        });
+    }
+
+    // --- 2. 互動邏輯 ---
     function selectRole(element, id) {
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+        // 移除其他人的選取狀態
+        document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+        // 加上自己的選取狀態
         element.classList.add('selected');
-        userSelection.myRole = id;
-        document.getElementById('btn-step-1').disabled = false;
+        myRole = id;
     }
 
-    // 頁面切換
-    function goToStep(stepNum) {
-        document.querySelectorAll('.step').forEach(s => s.classList.add('hidden'));
-        document.getElementById(`step-${stepNum}`).classList.remove('hidden');
-        document.getElementById('progress-text').innerText = `步驟 ${stepNum} / 5`;
-    }
-
-    // 按鈕監聽
-    document.getElementById('btn-step-1').onclick = () => {
-        // 簡單過濾：不能送給自己，也不能收自己的 (可選)
-        // 這裡僅示範進入下一步
-        goToStep(2);
-    };
-
-    document.getElementById('btn-step-2').onclick = () => {
-        const r = receiveSelect.value;
-        const g = giveSelect.value;
-        if(!r || !g) { alert('請選擇對象喔！'); return; }
-        userSelection.receiveFrom = r;
-        userSelection.giveTo = g;
-        goToStep(3);
-    };
-
-    document.getElementById('btn-step-3').onclick = () => goToStep(4);
-    document.getElementById('btn-submit').onclick = () => goToStep(5);
-
-
-    // --- 花藝實驗室功能 (Drag & Drop 簡化版) ---
+    // --- 3. 花藝畫布邏輯 ---
     const canvas = document.getElementById('flower-canvas');
-
-    function addFlower(emoji) {
+    
+    function addItem(emoji) {
         const el = document.createElement('div');
         el.className = 'draggable-item';
         el.innerText = emoji;
         
-        // 隨機位置放置
-        el.style.left = (Math.random() * 80 + 10) + '%';
-        el.style.top = (Math.random() * 80 + 10) + '%';
+        // 隨機位置
+        el.style.left = (Math.random() * 60 + 20) + '%';
+        el.style.top = (Math.random() * 60 + 20) + '%';
         
-        // 簡單拖曳邏輯
-        let isDragging = false;
-        
-        el.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            el.style.zIndex = 1000; // 拉到最上層
-        });
-        
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                const rect = canvas.getBoundingClientRect();
-                el.style.left = (e.clientX - rect.left - 20) + 'px'; // 20是修正中心點
-                el.style.top = (e.clientY - rect.top - 20) + 'px';
-            }
-        });
-
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-            el.style.zIndex = '';
-        });
-
-        // 手機觸控支援 (簡化版)
-        el.addEventListener('touchstart', (e) => { isDragging = true; });
-        el.addEventListener('touchmove', (e) => {
-            if (isDragging) {
-                e.preventDefault(); // 防止滾動頁面
-                const touch = e.touches[0];
-                const rect = canvas.getBoundingClientRect();
-                el.style.left = (touch.clientX - rect.left - 20) + 'px';
-                el.style.top = (touch.clientY - rect.top - 20) + 'px';
-            }
-        });
-        el.addEventListener('touchend', () => { isDragging = false; });
-
+        makeDraggable(el);
         canvas.appendChild(el);
     }
 
-    function clearCanvas() {
-        canvas.innerHTML = '<span style="position:absolute; top:40%; left:35%; color:#ccc; pointer-events:none;">在這裡創作</span>';
+    function makeDraggable(el) {
+        let isDragging = false;
+        
+        // 滑鼠/手指按下
+        const startDrag = (e) => {
+            isDragging = true;
+            el.style.zIndex = 1000;
+        };
+        // 移動
+        const moveDrag = (e) => {
+            if (!isDragging) return;
+            e.preventDefault(); // 防止手機滾動
+            
+            // 取得游標/手指座標
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            // 計算相對於畫布的位置
+            const rect = canvas.getBoundingClientRect();
+            el.style.left = (clientX - rect.left - 20) + 'px';
+            el.style.top = (clientY - rect.top - 20) + 'px';
+        };
+        // 放開
+        const endDrag = () => { isDragging = false; el.style.zIndex = ''; };
+
+        el.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', moveDrag);
+        document.addEventListener('mouseup', endDrag);
+
+        el.addEventListener('touchstart', startDrag);
+        document.addEventListener('touchmove', moveDrag, { passive: false });
+        document.addEventListener('touchend', endDrag);
     }
 
+    function clearCanvas() {
+        canvas.innerHTML = '<span style="position:absolute; top:45%; width:100%; text-align:center; color:#ccc; pointer-events:none;">在這裡創作<br>(可拖曳移動)</span>';
+    }
+
+    // --- 4. 送出資料 ---
+    document.getElementById('btn-submit').onclick = async () => {
+        // 驗證
+        if (!myRole) return alert("請在第 1 區選擇你的角色！");
+        const receive = document.getElementById('receive-select').value;
+        const give = document.getElementById('give-select').value;
+        const name = document.getElementById('name-input').value;
+        const msg = document.getElementById('msg-input').value;
+        const pay = document.getElementById('pay-input').value;
+
+        if(!receive || !give || !name || !pay) return alert("請填寫完整資料喔！");
+
+        // 按鈕鎖定
+        const btn = document.getElementById('btn-submit');
+        btn.innerText = "正在傳送...";
+        btn.disabled = true;
+
+        const postData = {
+            roleId: myRole,
+            ownerName: name,
+            receiveTarget: receive,
+            giveTarget: give,
+            message: msg,
+            paymentInfo: pay
+        };
+
+        try {
+            // 使用 no-cors 模式或是標準 POST
+            // 注意：Apps Script 的 doPost 必須正確處理 OPTIONS 請求或使用 text/plain
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify(postData)
+            });
+            const result = await res.json();
+            
+            if(result.status === 'success') {
+                alert("🎉 報名成功！我們會儘快通知你配對結果。");
+                location.reload();
+            } else {
+                alert("報名失敗：" + result.message);
+                location.reload(); // 重新整理以更新狀態
+            }
+        } catch(e) {
+            console.error(e);
+            alert("連線發生錯誤，請檢查網路");
+            btn.disabled = false;
+            btn.innerText = "確認報名";
+        }
+    };
 </script>
 
 </body>
