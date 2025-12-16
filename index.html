@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>兜是花 Flower Friday#5 聖誕交換花束</title>
+    <title>聖誕動物花藝交換派對</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         /* --- 基礎設定 --- */
@@ -64,7 +64,7 @@
         /* 畫布上的花 */
         .draggable-item { 
             position: absolute; cursor: move; user-select: none; 
-            width: 80px; height: 80px; /* 預設大小 */
+            width: 80px; height: 80px; 
         }
         .draggable-item img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 
@@ -76,17 +76,37 @@
 
         /* 按鈕群組 */
         .btn-group { padding: 20px; display: flex; gap: 10px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .btn { flex: 1; padding: 15px; border: none; border-radius: 50px; font-size: 18px; font-weight: bold; cursor: pointer; text-align: center; text-decoration: none; display: inline-block; }
         .btn-primary { background-color: #c0392b; color: white; box-shadow: 0 4px 15px rgba(192, 57, 43, 0.4); }
         .btn-primary:disabled { background-color: #ccc; box-shadow: none; cursor: not-allowed; }
         .btn-secondary { background-color: #eee; color: #555; }
+        .btn-apple { background-color: #000; color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
-        /* --- 取貨方式 Radio --- */
+        /* --- 選項 Radio (共用) --- */
         .radio-group { display: flex; gap: 15px; margin-bottom: 20px; }
-        .radio-option { flex: 1; border: 2px solid #ddd; border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .radio-option { flex: 1; border: 2px solid #ddd; border-radius: 10px; padding: 15px; text-align: center; cursor: pointer; transition: 0.2s; font-size: 15px;}
         .radio-option.active { border-color: #2c5e2e; background-color: #eafaf1; color: #2c5e2e; font-weight: bold; }
         .radio-option input { display: none; }
+        
         .method-block { padding: 20px; background: #f9f9f9; border-radius: 10px; border: 1px solid #eee; margin-top: 15px; }
+        
+        /* 警語樣式 */
+        .warning-text { color: #c0392b; font-size: 13px; font-weight: bold; margin-top: 5px; background: #fadbd8; padding: 8px; border-radius: 5px; }
+
+        /* 地圖容器 */
+        .map-container {
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+        }
+        .map-container iframe { width: 100%; height: 100%; border: 0; }
+        
+        /* 銀行資訊文字 */
+        .bank-info { font-size: 14px; color: #333; background: #fff; padding: 15px; border-radius: 8px; border: 1px dashed #aaa; margin-bottom: 15px; line-height: 1.8; }
+        .bank-info strong { color: #2c5e2e; }
 
         .loading-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.9); display: flex; justify-content: center; align-items: center; z-index: 999; flex-direction: column; }
     </style>
@@ -151,32 +171,44 @@
                     <input type="radio" name="deliveryMethod" value="自取" checked> 🏢 人性空間自取
                 </label>
                 <label class="radio-option" id="opt-delivery" onclick="toggleMethod('delivery')">
-                    <input type="radio" name="deliveryMethod" value="運送"> 🚚 北市專車運送
+                    <input type="radio" name="deliveryMethod" value="運送"> 🚚 專車運送 (+120)
                 </label>
             </div>
 
             <div id="block-self" class="method-block">
                 <div class="form-group">
-                    <label>預計自取時段：</label>
+                    <label>預計自取時段 (12/26)：</label>
                     <select id="self-time">
                         <option value="">請選擇時段...</option>
-                        <option value="12/24 14:00-16:00">12/24 14:00-16:00</option>
-                        <option value="12/24 16:00-18:00">12/24 16:00-18:00</option>
-                        <option value="12/24 18:00-20:00">12/24 18:00-20:00</option>
-                        <option value="12/25 14:00-16:00">12/25 14:00-16:00</option>
+                        <option value="12/26 16:00-16:30">12/26 16:00-16:30</option>
+                        <option value="12/26 16:30-17:00">12/26 16:30-17:00</option>
+                        <option value="12/26 17:00-17:30">12/26 17:00-17:30</option>
+                        <option value="12/26 17:30-18:00">12/26 17:30-18:00</option>
+                        <option value="12/26 18:00-18:30">12/26 18:00-18:30</option>
+                        <option value="12/26 18:30-19:00">12/26 18:30-19:00</option>
                     </select>
+                </div>
+                <div class="form-group">
+                    <label>地點：人性空間 (公館)</label>
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3615.5362987463027!2d121.52953877606447!3d25.015867739020116!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442a98b9b1e8b3f%3A0xfc84591eb30f101d!2sHuman%20Space%20Roosevelt!5e0!3m2!1sen!2stw!4v1765880890366!5m2!1sen!2stw" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+                    </div>
                 </div>
             </div>
 
             <div id="block-delivery" class="method-block hidden">
-                <div class="form-group"><label>配送地址 (限台北市)：</label><input type="text" id="delivery-address"></div>
+                <div class="warning-text">⚠️ 司機抵達會電話聯繫，請務必在電話後 15 分鐘內取貨！</div>
+                <div class="form-group" style="margin-top:15px;">
+                    <label>配送地址 (限中正、大安、信義區)：</label>
+                    <input type="text" id="delivery-address" placeholder="請輸入完整地址...">
+                </div>
                 <div class="form-group">
                     <label>希望配送時段：</label>
                     <select id="delivery-time">
                         <option value="">請選擇時段...</option>
-                        <option value="12/24 下午 A (13:00-15:00)">12/24 下午 A (13:00-15:00)</option>
-                        <option value="12/24 下午 B (15:00-17:00)">12/24 下午 B (15:00-17:00)</option>
-                        <option value="12/24 晚上 C (18:00-20:00)">12/24 晚上 C (18:00-20:00)</option>
+                        <option value="12/26 下午 A (13:00-15:00)">12/26 下午 A (13:00-15:00)</option>
+                        <option value="12/26 下午 B (15:00-17:00)">12/26 下午 B (15:00-17:00)</option>
+                        <option value="12/26 晚上 C (18:00-20:00)">12/26 晚上 C (18:00-20:00)</option>
                     </select>
                 </div>
             </div>
@@ -200,9 +232,34 @@
 
         <section>
             <h2>7. 匯款資訊</h2>
-            <div class="form-group">
-                <label>匯款帳號末五碼：</label>
-                <input type="text" id="pay-input" placeholder="12345">
+            
+            <div class="radio-group">
+                <label class="radio-option active" id="pay-opt-bank" onclick="togglePayment('bank')">
+                    <input type="radio" name="paymentMethod" value="bank" checked> 🏦 銀行匯款
+                </label>
+                <label class="radio-option" id="pay-opt-apple" onclick="togglePayment('apple')">
+                    <input type="radio" name="paymentMethod" value="apple"> 🍎 Apple Pay
+                </label>
+            </div>
+
+            <div id="block-bank">
+                <div class="bank-info">
+                    銀行：<strong>國泰世華 (013)</strong><br>
+                    帳號：<strong>105501316365</strong><br>
+                    備註請填：<strong>FlowerFriday 5</strong>
+                </div>
+                <div class="form-group">
+                    <label>匯款帳號末五碼：</label>
+                    <input type="text" id="pay-input" placeholder="12345">
+                </div>
+            </div>
+
+            <div id="block-apple" class="hidden" style="text-align: center;">
+                <p style="margin-bottom: 15px; color: #555;">點擊下方按鈕將開啟新分頁進行付款。</p>
+                <a href="https://trustpay.hitrust.com.tw/TRUSTPAY/EasyPay2?checktoken=6b888f9863f5175d3f589259145c513fd668092d&storeid=6N632" target="_blank" class="btn btn-apple">
+                     Pay with Apple Pay
+                </a>
+                <p style="margin-top: 15px; font-size: 13px; color: #888;">付款完成後，請直接按下方「確認報名」即可。</p>
             </div>
         </section>
 
@@ -217,61 +274,32 @@
     // ==========================================
     // ⚠️ 設定區：請換成你的 Google Apps Script 網址
     // ==========================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbxyobOzz0lMOeSkvfOg2sR4IsNzM2MFTbNUHtIkxZZwO8aIZ3B9OflAUlRqRdqrJFtHwQ/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbxyobOzz0lMOeSkvfOg2sR4IsNzM2MFTbNUHtIkxZZwO8aIZ3B9OflAUlRqRdqrJFtHwQ/exec"; // 請換回你真正的網址
     
-    // 花材圖片讀取失敗時的替代 Icon (防呆機制)
+    // 花材圖片讀取失敗時的替代 Icon
     const FALLBACK_ICON = "https://placehold.co/80x80/eee/999?text=🌸";
 
-    // 角色設定 (已根據圖片文字完整更新)
+    // 角色設定
     const CHARACTER_DESC = [
-        { 
-            id: 'rabbit', 
-            icon: '🐰', 
-            name: '固執的兔子', 
-            desc: '有藍色眼睛，不喜歡吃超過八公分的胡蘿蔔，喜歡在雲層很厚的時候上廁所，無聊的時候喜歡算塔羅。' 
-        },
-        { 
-            id: 'lion', 
-            icon: '🦁', 
-            name: '浪漫的獅子', 
-            desc: '青壯年，有著比大部分獅子長的尾巴。喜歡在樹下乘涼，在乘涼的時候喜歡寫詩，但不會拿筆。' 
-        },
-        { 
-            id: 'cat', 
-            icon: '🐱', 
-            name: '精靈的小貓', 
-            desc: '有著灰黑色的大理石紋、銳利的眼神，是剛出生不久的貓咪寶寶。最喜歡吃的食物是鮭魚，夢想是可以跳到獅子愛乘涼的樹上，然後從樹上往下看他。' 
-        },
-        { 
-            id: 'elephant', 
-            icon: '🐘', 
-            name: '無憂無慮的大象', 
-            desc: '生性樂觀、沒有煩惱，所有的動物都喜歡找他談心，但是天生只有三隻腳。有個沒動物知道的秘密技能是會背九九乘法表。' 
-        },
-        { 
-            id: 'owl', 
-            icon: '🦉', 
-            name: '少一根莖的貓頭鷹', 
-            desc: '長得很帥、喜歡吃辣。最喜歡睡覺的地方是兔子窩邊，如果沒不小心飛錯的話。' 
-        },
-        { 
-            id: 'penguin', 
-            icon: '🐧', 
-            name: '熱愛環保的企鵝', 
-            desc: '走路很慢、不會游泳。興趣是發明好吃的素食菜單，希望菜單可以獲得固執兔子的認可，也希望有一天可以看到沒有垃圾的海灘。' 
-        },
-        // --- 備用安全名額 (建議保留以防卡關) ---
+        { id: 'rabbit', icon: '🐰', name: '固執的兔子', desc: '有藍色眼睛，不喜歡吃超過八公分的胡蘿蔔，喜歡在雲層很厚的時候上廁所，無聊的時候喜歡算塔羅。' },
+        { id: 'lion', icon: '🦁', name: '浪漫的獅子', desc: '青壯年，有著比大部分獅子長的尾巴。喜歡在樹下乘涼，在乘涼的時候喜歡寫詩，但不會拿筆。' },
+        { id: 'cat', icon: '🐱', name: '精靈的小貓', desc: '有著灰黑色的大理石紋、銳利的眼神，是剛出生不久的貓咪寶寶。最喜歡吃的食物是鮭魚，夢想是可以跳到獅子愛乘涼的樹上，然後從樹上往下看他。' },
+        { id: 'elephant', icon: '🐘', name: '無憂無慮的大象', desc: '生性樂觀、沒有煩惱，所有的動物都喜歡找他談心，但是天生只有三隻腳。有個沒動物知道的秘密技能是會背九九乘法表。' },
+        { id: 'owl', icon: '🦉', name: '少一根莖的貓頭鷹', desc: '長得很帥、喜歡吃辣。最喜歡睡覺的地方是兔子窩邊，如果沒不小心飛錯的話。' },
+        { id: 'penguin', icon: '🐧', name: '熱愛環保的企鵝', desc: '走路很慢、不會游泳。興趣是發明好吃的素食菜單，希望菜單可以獲得固執兔子的認可，也希望有一天可以看到沒有垃圾的海灘。' },
+        // 安全名額
         { id: 'koala', icon: '🐨', name: '愛睏無尾熊', desc: '一天要睡20個小時，醒著的時候都在發呆。' },
         { id: 'bear', icon: '🐻', name: '暖男大熊', desc: '冬天會準備很多蜂蜜茶請大家喝。' }
     ];
 
     let myRole = null;
     let serverData = {}; 
-    let flowersData = []; // 花材庫存
-    let usedFlowers = {}; // 記帳用
+    let flowersData = []; 
+    let usedFlowers = {}; 
     let savedImageBase64 = null;
     let currentMethod = '自取';
-    let globalZIndex = 100; // 拖曳層級控制
+    let currentPayment = 'bank'; // 記錄目前選擇的付款方式
+    let globalZIndex = 100;
 
     // 1. 初始化
     window.onload = async function() {
@@ -279,46 +307,34 @@
             const res = await fetch(API_URL);
             const data = await res.json();
             serverData = data;
-            flowersData = data.flowers || []; // 讀取花材庫存
-            
+            flowersData = data.flowers || [];
             document.getElementById('loading').style.display = 'none';
             renderRoleList(data.roles);
             renderDropdowns();
-            renderFlowerAssets(); // 渲染花材
+            renderFlowerAssets();
         } catch (e) {
             console.error(e);
             alert("讀取資料失敗，請檢查網路或連結");
         }
     };
 
-    // --- 渲染花材列表 (含防呆) ---
+    // --- 渲染與邏輯 ---
     function renderFlowerAssets() {
         const container = document.getElementById('asset-list');
         container.innerHTML = '';
-
         flowersData.forEach(flower => {
             const div = document.createElement('div');
             const isSoldOut = flower.remaining <= 0;
             div.className = `asset-item ${isSoldOut ? 'disabled' : ''}`;
-            
-            if (!isSoldOut) {
-                div.onclick = () => addItem(flower);
-            }
-
+            if (!isSoldOut) div.onclick = () => addItem(flower);
             div.innerHTML = `
-                <img src="${flower.url || FALLBACK_ICON}" 
-                     alt="${flower.name}" 
-                     onerror="this.src='${FALLBACK_ICON}'">
-                <div class="asset-info">
-                    <div>${flower.name}</div>
-                    <div class="asset-count">剩 ${flower.remaining}</div>
-                </div>
+                <img src="${flower.url || FALLBACK_ICON}" alt="${flower.name}" onerror="this.src='${FALLBACK_ICON}'">
+                <div class="asset-info"><div>${flower.name}</div><div class="asset-count">剩 ${flower.remaining}</div></div>
             `;
             container.appendChild(div);
         });
     }
 
-    // --- 角色與配對 ---
     function renderRoleList(sheetData) {
         const container = document.getElementById('role-list');
         container.innerHTML = '';
@@ -340,24 +356,19 @@
         const gSelect = document.getElementById('give-select');
         const oldR = rSelect.value;
         const oldG = gSelect.value;
-
         rSelect.innerHTML = '<option value="">請選擇...</option>';
         gSelect.innerHTML = '<option value="">請選擇...</option>';
-
         CHARACTER_DESC.forEach(char => {
             const isSelf = (myRole === char.id);
             const isBusyProvider = serverData.busyProviders ? serverData.busyProviders.includes(char.id) : false;
             const isBusyReceiver = serverData.busyReceivers ? serverData.busyReceivers.includes(char.id) : false;
-            
             let rOption = document.createElement('option'); rOption.value = char.id; rOption.text = char.icon + " " + char.name; rOption.dataset.text = rOption.text;
             if (isSelf || isBusyProvider) { rOption.disabled = true; rOption.text += isSelf?" (你自己)":" (已被預約)"; rOption.dataset.locked="true"; }
             rSelect.appendChild(rOption);
-
             let gOption = document.createElement('option'); gOption.value = char.id; gOption.text = char.icon + " " + char.name; gOption.dataset.text = gOption.text;
             if (isSelf || isBusyReceiver) { gOption.disabled = true; gOption.text += isSelf?" (你自己)":" (已有人送)"; gOption.dataset.locked="true"; }
             gSelect.appendChild(gOption);
         });
-
         if(oldR) rSelect.value = oldR;
         if(oldG) gSelect.value = oldG;
         updateMutualExclusion();
@@ -368,39 +379,15 @@
         const gSelect = document.getElementById('give-select');
         const rVal = rSelect.value;
         const gVal = gSelect.value;
-
-        // 檢查 Receive 選單
-        Array.from(rSelect.options).forEach(o => {
-            // ✅ 關鍵修正：如果是「請選擇...」(value 為空)，就直接跳過，不要動它
-            if (o.value === "") return;
-
-            if (!o.dataset.locked) { 
-                o.disabled = (o.value == gVal && gVal !== ""); 
-                // 確保有備份文字才更新，避免變 undefined
-                if (o.dataset.text) {
-                    o.text = o.disabled ? o.dataset.text + " (不能重複選)" : o.dataset.text; 
-                }
-            }
-        });
-
-        // 檢查 Give 選單
-        Array.from(gSelect.options).forEach(o => {
-            // ✅ 關鍵修正：跳過「請選擇...」
-            if (o.value === "") return;
-
-            if (!o.dataset.locked) { 
-                o.disabled = (o.value == rVal && rVal !== ""); 
-                if (o.dataset.text) {
-                    o.text = o.disabled ? o.dataset.text + " (不能重複選)" : o.dataset.text; 
-                }
-            }
-        });
+        Array.from(rSelect.options).forEach(o=>{if(o.value===""){return;} if(!o.dataset.locked) { o.disabled=(o.value==gVal && gVal!==""); o.text=o.disabled?o.dataset.text+" (不能重複選)":o.dataset.text; }});
+        Array.from(gSelect.options).forEach(o=>{if(o.value===""){return;} if(!o.dataset.locked) { o.disabled=(o.value==rVal && rVal!==""); o.text=o.disabled?o.dataset.text+" (不能重複選)":o.dataset.text; }});
     }
 
     function selectRole(el, id) {
         document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected')); el.classList.add('selected'); myRole = id; renderDropdowns();
     }
 
+    // --- 切換邏輯 ---
     function toggleMethod(m) {
         document.getElementById('opt-self').classList.toggle('active', m=='self');
         document.getElementById('opt-delivery').classList.toggle('active', m=='delivery');
@@ -409,71 +396,45 @@
         currentMethod = m=='self'?'自取':'運送';
     }
 
-    // --- 花藝畫布 ---
-    const canvas = document.getElementById('flower-canvas');
-    
-    function addItem(flower) {
-        if (usedFlowers[flower.id] && (usedFlowers[flower.id] >= flower.remaining)) {
-            alert("這個花材的庫存用完了喔！");
-            return;
-        }
-
-        const el = document.createElement('div');
-        el.className = 'draggable-item';
-        
-        const img = document.createElement('img');
-        if (!flower.url) {
-            img.src = FALLBACK_ICON;
-        } else {
-            img.src = flower.url;
-        }
-        img.onerror = function() { 
-            this.src = FALLBACK_ICON; 
-            this.onerror = null; 
-        };
-        el.appendChild(img);
-
-        el.style.left = (Math.random() * 60 + 10) + '%';
-        el.style.top = (Math.random() * 60 + 10) + '%';
-        
-        if (!usedFlowers[flower.id]) usedFlowers[flower.id] = 0;
-        usedFlowers[flower.id]++;
-        
-        makeDraggable(el);
-        canvas.appendChild(el);
+    function togglePayment(p) {
+        document.getElementById('pay-opt-bank').classList.toggle('active', p=='bank');
+        document.getElementById('pay-opt-apple').classList.toggle('active', p=='apple');
+        document.getElementById('block-bank').classList.toggle('hidden', p!='bank');
+        document.getElementById('block-apple').classList.toggle('hidden', p!='apple');
+        currentPayment = p;
     }
 
+    // --- 花藝畫布 ---
+    const canvas = document.getElementById('flower-canvas');
+    function addItem(flower) {
+        if (usedFlowers[flower.id] && (usedFlowers[flower.id] >= flower.remaining)) {
+            alert("這個花材的庫存用完了喔！"); return;
+        }
+        const el = document.createElement('div'); el.className = 'draggable-item';
+        const img = document.createElement('img');
+        img.src = flower.url || FALLBACK_ICON;
+        img.onerror = function() { this.src = FALLBACK_ICON; this.onerror = null; };
+        el.appendChild(img);
+        el.style.left = (Math.random() * 60 + 10) + '%'; el.style.top = (Math.random() * 60 + 10) + '%';
+        if (!usedFlowers[flower.id]) usedFlowers[flower.id] = 0; usedFlowers[flower.id]++;
+        makeDraggable(el); canvas.appendChild(el);
+    }
     function makeDraggable(el) {
         let isDragging = false;
-        
-        const start = (e) => { 
-            isDragging = true; 
-            globalZIndex++; 
-            el.style.zIndex = globalZIndex; 
-        };
+        const start = (e) => { isDragging = true; globalZIndex++; el.style.zIndex = globalZIndex; };
         const move = (e) => {
-            if(!isDragging) return;
-            e.preventDefault();
+            if(!isDragging) return; e.preventDefault();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const rect = canvas.getBoundingClientRect();
-            el.style.left = (clientX - rect.left - 40) + 'px'; 
-            el.style.top = (clientY - rect.top - 40) + 'px';
+            el.style.left = (clientX - rect.left - 40) + 'px'; el.style.top = (clientY - rect.top - 40) + 'px';
         };
         const end = () => isDragging = false;
-
-        el.addEventListener('mousedown', start);
-        el.addEventListener('touchstart', start);
-        document.addEventListener('mousemove', move);
-        document.addEventListener('touchmove', move, { passive: false });
-        document.addEventListener('mouseup', end);
-        document.addEventListener('touchend', end);
+        el.addEventListener('mousedown', start); el.addEventListener('touchstart', start);
+        document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, { passive: false });
+        document.addEventListener('mouseup', end); document.addEventListener('touchend', end);
     }
-
-    function clearCanvas() { 
-        canvas.innerHTML = '<span style="position:absolute; top:45%; width:100%; text-align:center; color:#ccc; pointer-events:none;">拖曳花材到這裡</span>';
-        usedFlowers = {}; 
-    }
+    function clearCanvas() { canvas.innerHTML = '<span style="position:absolute; top:45%; width:100%; text-align:center; color:#ccc; pointer-events:none;">拖曳花材到這裡</span>'; usedFlowers = {}; }
 
     // --- 送出邏輯 ---
     document.getElementById('btn-next').onclick = async () => {
@@ -483,20 +444,14 @@
         
         const btn = document.getElementById('btn-next');
         const txt = btn.innerText; btn.innerText="💾 正在儲存設計..."; btn.disabled=true;
-        
         try {
             const capture = await html2canvas(canvas, { scale: 2, useCORS: true });
             savedImageBase64 = capture.toDataURL("image/png");
-            
             document.getElementById('phase-game').classList.add('hidden');
             document.getElementById('phase-info').classList.remove('hidden');
             document.getElementById('header-subtitle').innerText = "Step 2: 填寫資料";
             window.scrollTo(0,0);
-        } catch(e) { 
-            alert("截圖失敗(可能圖片跨域問題):" + e); 
-        } finally { 
-            btn.innerText=txt; btn.disabled=false; 
-        }
+        } catch(e) { alert("截圖失敗:" + e); } finally { btn.innerText=txt; btn.disabled=false; }
     };
 
     document.getElementById('btn-back').onclick = () => {
@@ -510,17 +465,34 @@
         const email = document.getElementById('email-input').value;
         const phone = document.getElementById('phone-input').value;
         const name = document.getElementById('name-input').value;
-        const pay = document.getElementById('pay-input').value;
+        const msg = document.getElementById('msg-input').value;
         
+        // 取貨方式驗證
         let pTime = "", addr = "";
         if(currentMethod==='自取') {
             pTime = document.getElementById('self-time').value;
+            if(!pTime) return alert("請選擇自取時段！");
             addr = "人性空間 (自取)";
         } else {
             pTime = document.getElementById('delivery-time').value;
             addr = document.getElementById('delivery-address').value;
+            if(!addr) return alert("請輸入配送地址！");
+            if(!pTime) return alert("請選擇配送時段！");
         }
-        if(!email || !name || !pay || !pTime || !addr) return alert("請填寫完整資料！");
+
+        // 付款方式驗證與處理
+        let finalPaymentInfo = "";
+        if (currentPayment === 'bank') {
+            const bankCode = document.getElementById('pay-input').value;
+            if(!bankCode) return alert("請填寫匯款帳號末五碼！");
+            finalPaymentInfo = "末五碼: " + bankCode;
+        } else {
+            // Apple Pay 不用檢查末五碼
+            finalPaymentInfo = "Apple Pay (使用者回報已付款)";
+        }
+
+        if(!email || !name) return alert("請填寫完整聯絡資料！");
+        if(!phone) return alert("請填寫手機號碼！");
 
         const btn = document.getElementById('btn-submit');
         const txt = btn.innerText; btn.innerText = "🚀 資料傳送中..."; btn.disabled = true;
@@ -529,8 +501,81 @@
             email, phone, roleId: myRole, ownerName: name,
             receiveTarget: document.getElementById('receive-select').value,
             giveTarget: document.getElementById('give-select').value,
-            message: document.getElementById('msg-input').value,
-            paymentInfo: pay, imageBase64: savedImageBase64,
+            message: msg, 
+            paymentInfo: finalPaymentInfo, // 整合付款資訊傳送
+            imageBase64: savedImageBase64,
+            method: currentMethod, pickupTime: pTime, address: addr,
+            usedFlowers: usedFlowers
+        };
+
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(postData) });
+            const result = await res.json();
+            if(result.status === 'success') {
+                alert("🎉 報名成功！"); location.reload();
+            } else {
+                alert("❌ 失敗：" + result.message);
+                if(!result.message.includes("Email")) location.reload();
+            }
+        } catch(e) { console.error(e); alert("錯誤:"+e); }
+        finally { btn.innerText = txt; btn.disabled = false; }
+    };
+    // [確認送出]
+    document.getElementById('btn-submit').onclick = async () => {
+        const email = document.getElementById('email-input').value;
+        const phone = document.getElementById('phone-input').value;
+        const name = document.getElementById('name-input').value;
+        const msg = document.getElementById('msg-input').value;
+        
+        // 取貨方式與地址驗證
+        let pTime = "", addr = "";
+        
+        if (currentMethod === '自取') {
+            pTime = document.getElementById('self-time').value;
+            if(!pTime) return alert("請選擇自取時段！");
+            addr = "人性空間 (自取)";
+        } else {
+            // --- 🚚 運送模式的防呆檢查 ---
+            pTime = document.getElementById('delivery-time').value;
+            addr = document.getElementById('delivery-address').value;
+            
+            if(!addr) return alert("請輸入配送地址！");
+            if(!pTime) return alert("請選擇配送時段！");
+
+            // 1. 檢查是否包含「區」的關鍵字
+            const allowedDistricts = ['中正區', '大安區', '信義區'];
+            // 檢查地址字串中，是否包含上述任何一個關鍵字
+            const isDistrictValid = allowedDistricts.some(dist => addr.includes(dist));
+
+            if (!isDistrictValid) {
+                return alert("⚠️ 很抱歉，配送範圍僅限：\n【中正區、大安區、信義區】\n\n請確認您的地址包含上述行政區名稱，或是改選自取喔！");
+            }
+            // ---------------------------
+        }
+
+        // 付款方式驗證
+        let finalPaymentInfo = "";
+        if (currentPayment === 'bank') {
+            const bankCode = document.getElementById('pay-input').value;
+            if(!bankCode) return alert("請填寫匯款帳號末五碼！");
+            finalPaymentInfo = "末五碼: " + bankCode;
+        } else {
+            finalPaymentInfo = "Apple Pay (使用者回報已付款)";
+        }
+
+        if(!email || !name) return alert("請填寫完整聯絡資料！");
+        if(!phone) return alert("請填寫手機號碼！");
+
+        const btn = document.getElementById('btn-submit');
+        const txt = btn.innerText; btn.innerText = "🚀 資料傳送中..."; btn.disabled = true;
+
+        const postData = {
+            email, phone, roleId: myRole, ownerName: name,
+            receiveTarget: document.getElementById('receive-select').value,
+            giveTarget: document.getElementById('give-select').value,
+            message: msg, 
+            paymentInfo: finalPaymentInfo,
+            imageBase64: savedImageBase64,
             method: currentMethod, pickupTime: pTime, address: addr,
             usedFlowers: usedFlowers
         };
