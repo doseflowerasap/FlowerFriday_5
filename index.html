@@ -22,7 +22,8 @@
     <div id="phase-intro">
         <section>
             <div class="intro-text">
-                <p>叮叮噹～叮叮噹～歡迎來到聖誕交換花束派對！<br>
+                <div class="intro-title">叮叮噹～叮叮噹～歡迎來到聖誕交換花束派對！</div>
+                <p>
                 在這裡，你會化身成一隻小動物。<br>
                 你會為某一隻小動物準備一束花，也會在交換中，收到另一隻小動物悄悄為你配好的花束與祝福。<br>
                 你想當什麼小動物、想送給誰、或希望收到誰的花束，都可以許願喔。<br>
@@ -165,7 +166,23 @@
             </div>
             <div id="block-delivery" class="method-block hidden">
                 <div class="warning-text">⚠️ 司機抵達會電話聯繫，請務必在電話後 15 分鐘內取貨！</div>
-                <div class="form-group" style="margin-top:15px;"><label>配送地址 (限中正、大安、信義區)：</label><input type="text" id="delivery-address" placeholder="請輸入完整地址..."></div>
+                
+                <div class="delivery-map-container">
+                    <p style="font-size:14px; font-weight:bold; color:#555; margin-bottom:5px;">👇 配送範圍示意圖 (橘框內)</p>
+                    <img src="region.jpeg" alt="配送範圍圖" onclick="window.open(this.src, '_blank')">
+                    <p style="font-size:12px; color:#888;">(點擊圖片可放大)</p>
+                </div>
+
+                <div class="form-group" style="margin-top:15px;">
+                    <label>配送地址：</label>
+                    <input type="text" id="delivery-address" placeholder="請輸入完整地址 (含行政區)...">
+                </div>
+
+                <label class="zone-confirm">
+                    <input type="checkbox" id="zone-check">
+                    <span>我已確認收件地址位於上圖的橘色框線範圍內</span>
+                </label>
+
                 <div class="form-group">
                     <label>希望配送時段：</label>
                     <select id="delivery-time">
