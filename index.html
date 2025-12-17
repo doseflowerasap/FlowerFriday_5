@@ -16,20 +16,24 @@
 
 <div class="container">
     <header>
+        <div class="brand-container">
+            <img src="logo.png" alt="兜是花 Logo" class="brand-logo" onerror="this.src='https://placehold.co/100x100/FFF/2c5e2e?text=Logo'">
+            <div class="brand-name">兜是花 @doseflower.asap</div>
+        </div>
         <h1>聖誕動物交換花束派對 🎄</h1>
     </header>
 
     <div id="phase-intro">
         <section>
             <div class="intro-text">
-                <div class="intro-title">叮叮噹～叮叮噹～歡迎來到聖誕交換花束派對！</div>
+                <div class="intro-title">叮叮噹～叮叮噹～<br>歡迎來到聖誕交換花束派對！</div>
                 <p>
                 在這裡，你會化身成一隻小動物。<br>
-                你會為某一隻小動物準備一束花，<br>
-                也會在交換中，收到另一隻小動物悄悄為你配好的花束與祝福。<br>
-                你想當什麼小動物、想送給誰、或希望收到誰的花束，<br>
-                都可以許願喔。<br>
-                配花會在我們的網頁上電子化完成，非常簡單！</p>
+                <strong>你會為某一隻小動物準備一束花，</strong><br>
+                也會在交換中，<br>
+                <strong>收到另一隻小動物悄悄為你配好的花束與祝福。</strong><br>
+                你想當什麼小動物、想送給誰、或希望收到誰的花束，都可以許願喔。<br>
+                <strong>「配花是數位化的，會在這個網頁上直接完成，非常簡單！」</strong></p>
             </div>
             <div class="intro-block">
                 <h3>💰 一束花 $650，你會收到：</h3>
@@ -87,16 +91,17 @@
             <h2>3. 花藝實驗室 🎨</h2>
             <p style="font-size:14px; color:#555; margin-top:-10px; background:#fff3cd; padding:10px; border-radius:8px;">
                 請將花材拖入下方牛皮紙範圍內插花。<br>
-                <strong>💡 限制：一般花材 3 支，特殊花材 2 支。</strong><br>
+                <strong>💡 限制：全花材混搭，最多挑選 6 支。</strong><br>
                 <span style="font-size:12px; color:#888;">(若要刪除花材，請在畫布上的花朵「快點兩下」)</span>
             </p>
             
             <div class="canvas-container" id="flower-canvas">
                 <div class="canvas-bg"></div>
+                
                 <div class="canvas-counter">
-                    <div class="counter-row"><span>一般花材:</span><span id="cnt-general" class="count-val">0/3</span></div>
-                    <div class="counter-row"><span>特殊花材:</span><span id="cnt-special" class="count-val">0/2</span></div>
+                    <span id="cnt-total" class="count-val">0/6</span>
                 </div>
+                
                 <span style="position:absolute; top:30%; width:100%; text-align:center; color:#ccc; pointer-events:none; font-size:12px;">(拖曳花材到這裡)</span>
             </div>
             
