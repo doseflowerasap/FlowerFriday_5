@@ -216,7 +216,7 @@ h2 {
     cursor: grab; 
     width: 100px; height: 150px; /* 固定大小 */
     user-select: none; 
-    z-index: 3000 !important; /* ⚠️ 關鍵：比牛皮紙高 */
+    z-index: 3000;
     filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3)); 
 }
 .draggable-item:active { cursor: grabbing; }
