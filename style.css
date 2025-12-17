@@ -53,10 +53,25 @@ header {
     margin-bottom: 8px;
 }
 
-.brand-name {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 500;
+/* 兜是花：強制對齊 Logo 寬度 */
+.brand-title {
+    width: 80px; /* ⚠️ 關鍵：設定成跟 Logo 一樣寬 (80px) */
+    text-align: justify; /* 文字分散對齊 */
+    text-align-last: justify; /* ⚠️ 強制最後一行也分散對齊 (針對只有一行的狀況) */
+    
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 4px; /* 跟下面的帳號留點距離 */
+    font-family: 'Microsoft JhengHei', sans-serif;
+}
+
+/* IG 帳號：換行、變小 */
+.brand-handle {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.7); /* 稍微透明一點 */
+    font-weight: 400;
     letter-spacing: 1px;
     font-family: 'Helvetica', sans-serif;
 }
@@ -152,15 +167,17 @@ h2 {
     pointer-events: none; 
 }
 
-/* 角色圖片樣式 */
+/* --- 角色圖片樣式 (原始方形版) --- */
 .role-icon-img {
-    width: 70px; height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
+    width: 80px;          /* 寬度稍微加大一點 */
+    height: 80px;         /* 高度 */
+    border-radius: 0px;   /* 稍微一點點小圓角，看起來比較柔和 (不要可改 0) */
+    object-fit: contain;  /* ⭐️ 關鍵：完整顯示圖片，不裁切 */
     margin-right: 15px;
-    flex-shrink: 0;
-    border: 3px solid #eee;
-    background-color: #fff;
+    flex-shrink: 0;       /* 防止被壓縮 */
+    border: 0px solid #eee; /* 留一個很細的淡邊框就好 */
+    background-color: transparent; /* 背景透明，適合去背 PNG */
+    transition: all 0.2s ease;
 }
 
 .role-info h3 { margin: 0 0 5px 0; font-size: 18px; color: #333; }
@@ -299,54 +316,74 @@ h2 {
     line-height: 1.6; text-align: justify;
 }
 
-/* 通用的膠囊選項樣式 (.pref-options label 和 .zone-confirm) */
-.pref-options { display: flex; flex-direction: column; gap: 12px; }
-
-/* 樣式共用設定 */
-.pref-options label,
-.zone-confirm { 
-    display: flex; align-items: center; justify-content: flex-start;
-    width: 100%; 
-    padding: 12px 5px; 
-    box-sizing: border-box;
-    background: #fdfdfd; 
-    border: 2px solid #eee; 
-    border-radius: 50px; 
-    cursor: pointer; 
-    transition: all 0.2s ease;
-    font-size: 14px; color: #555; font-weight: 500;
+/* --- 替代方案與配送確認 (手機版面修復) --- */
+.pref-options, .zone-confirm-container { /* 如果你有包容器的話 */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-/* 左側固定寬度區域 (圓點/勾選框) */
+/* 共用的卡片樣式 */
+.pref-options label,
+.zone-confirm {
+    display: flex;
+    align-items: center; /* 垂直置中 */
+    justify-content: flex-start; /* ⚠️ 確保內容靠左排列 (很重要) */
+    
+    width: 100%;
+    padding: 10px; /* 縮小一點內距 */
+    box-sizing: border-box;
+    
+    background: #fdfdfd;
+    border: 2px solid #eee;
+    border-radius: 50px; /* 膠囊狀 */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    font-size: 14px; /* 手機字體適中 */
+    color: #555;
+    font-weight: 500;
+}
+
+/* 1. 左邊圓點/勾選框：縮小寬度，節省空間 */
 .pref-options input[type="radio"],
 .zone-confirm input {
-    flex: 0 0 50px; 
+    flex: 0 0 40px; /* ⚠️ 改成 40px，讓右邊文字空間變大 */
     margin: 0;
-    transform: scale(1.3);
+    transform: scale(1.2); /* 圓點稍微調小一點點 */
     accent-color: #c0392b;
     cursor: pointer;
-    display: flex; justify-content: center; align-items: center;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-/* 右側文字區域 (單行、靠左) */
+/* 2. 右邊文字：允許換行，確保不會跑版 */
 .pref-options span,
 .zone-confirm span {
-    flex: 1; 
-    text-align: left; 
-    white-space: nowrap; 
-    overflow: hidden; text-overflow: ellipsis;
-    padding-right: 15px;
+    flex: 1; /* 佔滿剩餘空間 */
+    text-align: left; /* ⚠️ 強制靠左 */
+    
+    /* ⚠️ 關鍵修正：允許換行，避免文字消失或跑版 */
+    white-space: normal; 
+    line-height: 1.4;    /* 行高舒適一點 */
+    
+    padding-right: 5px;  /* 右邊留一點點空隙就好 */
 }
 
-/* 狀態樣式 */
-.pref-options label:hover, .zone-confirm:hover { background: #fafafa; border-color: #ddd; }
+/* 狀態效果 (維持不變) */
+.pref-options label:hover, .zone-confirm:hover {
+    background: #fafafa;
+    border-color: #ddd;
+}
 
 .pref-options label:has(input:checked),
-.zone-confirm:has(input:checked) { 
-    background: #fff5f5; 
-    border-color: #c0392b; 
-    color: #c0392b; 
-    box-shadow: 0 2px 8px rgba(192, 57, 43, 0.15); 
+.zone-confirm:has(input:checked) {
+    background: #fff5f5;
+    border-color: #c0392b;
+    color: #c0392b;
+    box-shadow: 0 2px 8px rgba(192, 57, 43, 0.15);
 }
 
 .zone-confirm { margin-top: 20px; }
