@@ -316,67 +316,59 @@ h2 {
     line-height: 1.6; text-align: justify;
 }
 
-/* --- 替代方案與配送確認 (手機版面修復) --- */
-.pref-options, .zone-confirm-container { /* 如果你有包容器的話 */
+/* --- 替代方案與配送確認 (Grid 強制排版版) --- */
+.pref-options {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* 共用的卡片樣式 */
+/* 1. 設定容器：改用 Grid，左邊固定 40px，右邊自動填滿 (1fr) */
 .pref-options label,
 .zone-confirm {
-    display: flex;
-    align-items: center; /* 垂直置中 */
-    justify-content: flex-start; /* ⚠️ 確保內容靠左排列 (很重要) */
+    display: grid !important;         /* ⚠️ 強制使用 Grid */
+    grid-template-columns: 40px 1fr;  /* ⚠️ 左欄 40px，右欄自動填滿 */
+    align-items: center;              /* 垂直置中 */
     
     width: 100%;
-    padding: 10px; /* 縮小一點內距 */
+    min-height: 50px;                 /* 確保至少有高度 */
+    padding: 10px 5px;                /* 內距 */
     box-sizing: border-box;
     
     background: #fdfdfd;
     border: 2px solid #eee;
-    border-radius: 50px; /* 膠囊狀 */
+    border-radius: 50px;              /* 圓角膠囊 */
     cursor: pointer;
     transition: all 0.2s ease;
-    
-    font-size: 14px; /* 手機字體適中 */
-    color: #555;
-    font-weight: 500;
 }
 
-/* 1. 左邊圓點/勾選框：縮小寬度，節省空間 */
+/* 2. 左邊圓點：強制置中 */
 .pref-options input[type="radio"],
 .zone-confirm input {
-    flex: 0 0 40px; /* ⚠️ 改成 40px，讓右邊文字空間變大 */
-    margin: 0;
-    transform: scale(1.2); /* 圓點稍微調小一點點 */
+    margin: 0 auto;       /* 在格子裡水平置中 */
+    transform: scale(1.3);
     accent-color: #c0392b;
     cursor: pointer;
-    
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 20px;          /* 固定寬度，避免瀏覽器亂算 */
+    height: 20px;
 }
 
-/* 2. 右邊文字：允許換行，確保不會跑版 */
+/* 3. 右邊文字：正常換行，絕對不被擠壓 */
 .pref-options span,
 .zone-confirm span {
-    flex: 1; /* 佔滿剩餘空間 */
-    text-align: left; /* ⚠️ 強制靠左 */
+    text-align: left;     /* 靠左對齊 */
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+    line-height: 1.4;
     
-    /* ⚠️ 關鍵修正：允許換行，避免文字消失或跑版 */
-    white-space: normal; 
-    line-height: 1.4;    /* 行高舒適一點 */
-    
-    padding-right: 5px;  /* 右邊留一點點空隙就好 */
+    white-space: normal;  /* ⚠️ 允許換行 */
+    word-break: break-word; /* 斷字處理，避免撐爆 */
+    padding-right: 15px;  /* 右邊留白 */
 }
 
-/* 狀態效果 (維持不變) */
-.pref-options label:hover, .zone-confirm:hover {
-    background: #fafafa;
-    border-color: #ddd;
-}
+/* 選中狀態樣式 (維持不變) */
+.pref-options label:hover, .zone-confirm:hover { background: #fafafa; border-color: #ddd; }
 
 .pref-options label:has(input:checked),
 .zone-confirm:has(input:checked) {
