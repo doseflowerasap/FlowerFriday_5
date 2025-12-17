@@ -243,11 +243,23 @@
             if(!pTime) return alert("請選擇自取時段！");
             addr = "人性空間 (自取)";
         } else {
+            // --- 🚚 運送模式檢查 ---
             pTime = document.getElementById('delivery-time').value;
             addr = document.getElementById('delivery-address').value;
+            
             if(!addr) return alert("請輸入配送地址！");
             if(!pTime) return alert("請選擇配送時段！");
-            if(!['中正區','大安區','信義區'].some(d => addr.includes(d))) return alert("⚠️ 配送範圍僅限：中正、大安、信義區！");
+
+            // 1. 關鍵字初篩 (可以保留原本的幾個大區，或是乾脆拿掉這行，完全依賴人工確認)
+            // 建議保留幾個絕對不可能送到的關鍵字做反向排除，或是維持正向檢查
+            // 這裡示範放寬標準，只要有寫「區」就好，主要依賴 checkbox
+            if(!addr.includes("區")) return alert("地址請包含行政區名稱！");
+
+            // 2. 檢查是否有勾選確認框
+            const isZoneConfirmed = document.getElementById('zone-check').checked;
+            if(!isZoneConfirmed) {
+                return alert("⚠️ 請參考地圖，並勾選「我已確認收件地址位於橘色框線範圍內」才能送出喔！");
+            }
         }
 
         const bankCode = document.getElementById('pay-input').value;
@@ -277,8 +289,20 @@
         try {
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(postData) });
             const result = await res.json();
-            if(result.status === 'success') { alert("🎉 報名成功！"); location.reload(); }
-            else { alert("❌ 失敗：" + result.message); if(!result.message.includes("Email")) location.reload(); }
-        } catch(e) { console.error(e); alert("錯誤:"+e); }
-        finally { btn.innerText = txt; btn.disabled = false; }
+            
+            if(result.status === 'success') { 
+                // 🎉 這裡修改了成功訊息
+                alert("🎉 報名成功！\n\n請留意：訂花確認信將於 12/24 (三) 寄至您的 Email，謝謝參與！"); 
+                location.reload(); 
+            } else { 
+                alert("❌ 失敗：" + result.message); 
+                if(!result.message.includes("Email")) location.reload(); 
+            }
+        } catch(e) { 
+            console.error(e); 
+            alert("錯誤:"+e); 
+        } finally { 
+            btn.innerText = txt; 
+            btn.disabled = false; 
+        }
     };
