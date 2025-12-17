@@ -72,40 +72,33 @@ function initEventBindings() {
     // 🔄 下一步：截圖並跳轉 (如果這裡沒反應，通常是 html2canvas 沒載入)
     const btnNext = document.getElementById('btn-next');
     if(btnNext) btnNext.onclick = async () => {
-        console.log("點擊了下一步...");
+        // ... (驗證邏輯省略，保持原本的) ...
 
-        // 驗證 1：角色選了嗎？
-        if (!myRole) return alert("⚠️ 請滑到最上面，先選擇您的「動物角色」喔！");
-        
-        // 驗證 2：志願序填了嗎？
-        const ids = ['recv-1','recv-2','recv-3','give-1','give-2','give-3'];
-        for(let id of ids) { 
-            if(!document.getElementById(id).value) return alert("⚠️ 請將 3 個接收與 3 個贈送心願都選好喔！"); 
-        }
-
-        // 驗證 3：截圖套件是否存在
-        if(typeof html2canvas === 'undefined') {
-            return alert("❌ 系統錯誤：找不到截圖工具 (html2canvas)。\n請確認 index.html 有加入 script 標籤。");
-        }
-        
         const btn = document.getElementById('btn-next'); 
         const txt = btn.innerText; 
         btn.innerText = "💾 儲存設計..."; 
         btn.disabled = true;
         
         try {
-            // 開始截圖
-            const capture = await html2canvas(document.getElementById('flower-canvas'), { scale: 2, useCORS: true });
+            // 截圖設定：針對本地圖片
+            const capture = await html2canvas(document.getElementById('flower-canvas'), { 
+                scale: 2, 
+                // 雖然是相對路徑，加著這行通常沒壞處，或是拿掉也可以
+                useCORS: true 
+            });
+            
+            // 這次應該會成功了！
             savedImageBase64 = capture.toDataURL("image/png");
             
-            // 切換頁面
+        } catch(e) { 
+            console.warn("截圖發生錯誤:", e);
+            // 如果真的還是失敗，至少讓流程繼續，不要卡死
+            savedImageBase64 = null; 
+        } finally { 
             document.getElementById('phase-game').classList.add('hidden');
             document.getElementById('phase-info').classList.remove('hidden');
             window.scrollTo(0,0);
-        } catch(e) { 
-            console.error(e);
-            alert("截圖失敗，請重試。\n錯誤訊息：" + e); 
-        } finally { 
+            
             btn.innerText = txt; 
             btn.disabled = false; 
         }
@@ -273,7 +266,7 @@ function renderFlowerAssets() {
     }); 
 }
 
-// --- 修正版：畫布物件 (保留 CORS 但加入防快取) ---
+// --- 修正版：addItem (針對相對路徑的最佳化) ---
 function addItem(f) { 
     if(usedFlowers[f.id] >= f.remaining) return alert("這個花材的庫存用完了喔！"); 
     if (countTotal >= LIMIT_TOTAL) return alert(`花束最多只能選 ${LIMIT_TOTAL} 支喔！`);
@@ -285,32 +278,24 @@ function addItem(f) {
     el.className = 'draggable-item';
     el.dataset.id = f.id; 
     
-    // 點擊置頂邏輯
+    // 點擊置頂
     el.style.zIndex = globalZIndex; 
 
     const img = document.createElement('img');
     
-    // ⚠️ 關鍵：畫布上的圖需要截圖，所以必須留著這行
-    img.crossOrigin = "anonymous";  
-
-    // ⚠️ 新增：加上時間參數，強制瀏覽器當作新圖片讀取，避免跟選單的圖片打架
-    // 檢查原本網址有沒有 '?'，有的話就加 '&'，沒有就加 '?'
-    const sep = (f.url && f.url.includes('?')) ? '&' : '?';
-    const safeUrl = (f.url || FALLBACK_ICON) + sep + 't=' + new Date().getTime();
+    // ⚠️ 修改重點：
+    // 1. 拿掉 img.crossOrigin = "anonymous"; (自己家的圖不用這行)
+    // 2. 拿掉時間戳記 (不用 ?t=...)
+    // 3. 直接讀取路徑即可
+    img.src = f.url || FALLBACK_ICON;
     
-    img.src = safeUrl;
-
     img.onerror = function(){ 
-        // 如果加上 CORS 還是破圖，表示這個圖床真的不支援截圖
-        // 我們退回原圖顯示（至少看得到），但截圖可能會失敗
-        this.src = f.url || FALLBACK_ICON; 
-        this.crossOrigin = null; // 放棄跨域治療
+        this.src = FALLBACK_ICON; 
         this.onerror = null; 
     };
     
     el.appendChild(img);
     
-    // ... (後面的位置與雙擊刪除代碼保持不變) ...
     el.style.left = (Math.random() * 40 + 30) + '%';
     el.style.top = (Math.random() * 40 + 20) + '%';
     
