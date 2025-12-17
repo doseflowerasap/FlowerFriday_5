@@ -27,18 +27,20 @@
 let myRole = null;
 let flowersData = [], usedFlowers = {}, savedImageBase64 = null;
 let currentMethod = '自取';
-
-// ⚠️ 關鍵修復：初始 Z-Index 設為 3000，確保高於背景紙 (2000)
-let globalZIndex = 3000; 
-
-// 計數器 (單一總量限制)
+let globalZIndex = 3000; // 初始層級
 let countTotal = 0;
 const LIMIT_TOTAL = 6;
 
 // ==========================================
-// 初始載入
+// 🚀 核心：網頁載入後才執行 (修正按鈕沒反應的主因)
 // ==========================================
 window.onload = async function() {
+    console.log("網頁載入完成，開始初始化...");
+    
+    // 1. 先綁定所有按鈕事件 (確保按鈕一定有反應)
+    initEventBindings();
+
+    // 2. 讀取 Google Sheet 資料
     try {
         const res = await fetch(API_URL);
         const data = await res.json();
@@ -54,37 +56,161 @@ window.onload = async function() {
     }
 };
 
-// 開場按鈕
-document.getElementById('btn-start').onclick = () => {
-    document.getElementById('phase-intro').classList.add('hidden');
-    document.getElementById('phase-game').classList.remove('hidden');
-    window.scrollTo(0,0);
-};
+// ==========================================
+// 按鈕事件綁定區 (集中管理)
+// ==========================================
+function initEventBindings() {
+    
+    // 開場按鈕
+    const btnStart = document.getElementById('btn-start');
+    if(btnStart) btnStart.onclick = () => {
+        document.getElementById('phase-intro').classList.add('hidden');
+        document.getElementById('phase-game').classList.remove('hidden');
+        window.scrollTo(0,0);
+    };
+
+    // 🔄 下一步：截圖並跳轉 (如果這裡沒反應，通常是 html2canvas 沒載入)
+    const btnNext = document.getElementById('btn-next');
+    if(btnNext) btnNext.onclick = async () => {
+        console.log("點擊了下一步...");
+
+        // 驗證 1：角色選了嗎？
+        if (!myRole) return alert("⚠️ 請滑到最上面，先選擇您的「動物角色」喔！");
+        
+        // 驗證 2：志願序填了嗎？
+        const ids = ['recv-1','recv-2','recv-3','give-1','give-2','give-3'];
+        for(let id of ids) { 
+            if(!document.getElementById(id).value) return alert("⚠️ 請將 3 個接收與 3 個贈送心願都選好喔！"); 
+        }
+
+        // 驗證 3：截圖套件是否存在
+        if(typeof html2canvas === 'undefined') {
+            return alert("❌ 系統錯誤：找不到截圖工具 (html2canvas)。\n請確認 index.html 有加入 script 標籤。");
+        }
+        
+        const btn = document.getElementById('btn-next'); 
+        const txt = btn.innerText; 
+        btn.innerText = "💾 儲存設計..."; 
+        btn.disabled = true;
+        
+        try {
+            // 開始截圖
+            const capture = await html2canvas(document.getElementById('flower-canvas'), { scale: 2, useCORS: true });
+            savedImageBase64 = capture.toDataURL("image/png");
+            
+            // 切換頁面
+            document.getElementById('phase-game').classList.add('hidden');
+            document.getElementById('phase-info').classList.remove('hidden');
+            window.scrollTo(0,0);
+        } catch(e) { 
+            console.error(e);
+            alert("截圖失敗，請重試。\n錯誤訊息：" + e); 
+        } finally { 
+            btn.innerText = txt; 
+            btn.disabled = false; 
+        }
+    };
+
+    // 上一步
+    const btnBack = document.getElementById('btn-back');
+    if(btnBack) btnBack.onclick = () => {
+        document.getElementById('phase-info').classList.add('hidden');
+        document.getElementById('phase-game').classList.remove('hidden');
+    };
+
+    // 🚀 最終送出
+    const btnSubmit = document.getElementById('btn-submit');
+    if(btnSubmit) btnSubmit.onclick = async () => {
+        const email = document.getElementById('email-input').value;
+        const phone = document.getElementById('phone-input').value;
+        const name = document.getElementById('name-input').value;
+        
+        let pTime = "", addr = "";
+        if (currentMethod === '自取') {
+            pTime = document.getElementById('self-time').value;
+            if(!pTime) return alert("請選擇自取時段！");
+            addr = "人性空間 (自取)";
+        } else {
+            pTime = document.getElementById('delivery-time').value;
+            addr = document.getElementById('delivery-address').value;
+            if(!addr) return alert("請輸入配送地址！");
+            if(!pTime) return alert("請選擇配送時段！");
+            if(!addr.includes("區")) return alert("地址請包含行政區名稱！");
+
+            // 檢查配送確認勾選
+            const isZoneConfirmed = document.getElementById('zone-check').checked;
+            if(!isZoneConfirmed) {
+                return alert("⚠️ 請參考地圖，並勾選「我已確認收件地址位於橘色框線範圍內」才能送出喔！");
+            }
+        }
+
+        const bankCode = document.getElementById('pay-input').value;
+        if(!bankCode) return alert("請填寫匯款帳號末五碼！");
+        if(!email || !name || !phone) return alert("請填寫完整資料！");
+        
+        // 取得替代方案 (Radio)
+        const subPrefEl = document.querySelector('input[name="subPref"]:checked');
+        const subPref = subPrefEl ? subPrefEl.value : "未選擇";
+
+        const btn = document.getElementById('btn-submit'); 
+        const txt = btn.innerText; 
+        btn.innerText = "🚀 傳送中..."; 
+        btn.disabled = true;
+
+        const postData = {
+            email, phone, roleId: myRole, ownerName: name,
+            receive_1: document.getElementById('recv-1').value,
+            receive_2: document.getElementById('recv-2').value,
+            receive_3: document.getElementById('recv-3').value,
+            give_1: document.getElementById('give-1').value,
+            give_2: document.getElementById('give-2').value,
+            give_3: document.getElementById('give-3').value,
+            message: document.getElementById('msg-input').value,
+            paymentInfo: "末五碼: " + bankCode,
+            imageBase64: savedImageBase64,
+            method: currentMethod, pickupTime: pTime, address: addr,
+            usedFlowers: usedFlowers,
+            subPref: subPref
+        };
+
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(postData) });
+            const result = await res.json();
+            
+            if(result.status === 'success') { 
+                alert("🎉 報名成功！\n\n請留意：訂花確認信將於 12/24 (三) 寄至您的 Email，謝謝參與！"); 
+                location.reload(); 
+            } else { 
+                alert("❌ 失敗：" + result.message); 
+                if(!result.message.includes("Email")) location.reload(); 
+            }
+        } catch(e) { 
+            console.error(e); 
+            alert("錯誤:"+e); 
+        } finally { 
+            btn.innerText = txt; 
+            btn.disabled = false; 
+        }
+    };
+}
 
 // ==========================================
-// 1. 角色與志願序邏輯
+// 邏輯函式 (保持不變)
 // ==========================================
 function renderRoleList(sheetData) {
-    const container = document.getElementById('role-list'); 
-    container.innerHTML = '';
-    
+    const container = document.getElementById('role-list'); container.innerHTML = '';
     CHARACTER_DESC.forEach(char => {
         const status = sheetData.find(d => d.id === char.id);
         const isTaken = status ? status.taken : false;
-        
         const card = document.createElement('div'); 
         card.className = `role-card ${isTaken ? 'disabled' : ''}`;
-        
         if (!isTaken) card.onclick = () => selectRole(card, char.id);
-        
-        // 使用 img 標籤顯示圖片
         card.innerHTML = `
             <img class="role-icon-img" src="${char.imgUrl}" alt="${char.name}" onerror="this.src='${FALLBACK_ICON}'">
             <div class="role-info">
                 <h3>${char.name}</h3>
                 <p class="role-desc">${char.desc}</p>
             </div>` + (isTaken ? '<div style="margin-left:auto;color:red;font-size:12px;">(已額滿)</div>' : '');
-            
         container.appendChild(card);
     });
 }
@@ -99,49 +225,34 @@ function selectRole(el, id) {
 function renderAllDropdowns() {
     const ids = ['recv-1','recv-2','recv-3','give-1','give-2','give-3'];
     ids.forEach(id => {
-        const el = document.getElementById(id); 
-        el.innerHTML = '<option value="">請選擇...</option>';
-        
+        const el = document.getElementById(id); el.innerHTML = '<option value="">請選擇...</option>';
         CHARACTER_DESC.forEach(char => {
-            let opt = document.createElement('option'); 
-            opt.value = char.id; 
-            opt.text = char.name; // 下拉選單只顯示文字
-            opt.dataset.text = opt.text;
-            
-            if(myRole === char.id) { 
-                opt.disabled = true; 
-                opt.text += " (你自己)"; 
-                opt.dataset.self = "true"; 
-            }
+            let opt = document.createElement('option'); opt.value = char.id; 
+            opt.text = char.name; opt.dataset.text = opt.text;
+            if(myRole === char.id) { opt.disabled = true; opt.text += " (你自己)"; opt.dataset.self = "true"; }
             el.appendChild(opt);
         });
     });
-    updateWishes('recv'); 
-    updateWishes('give');
+    updateWishes('recv'); updateWishes('give');
 }
 
 function updateWishes(type) {
     const ids = [1, 2, 3].map(i => `${type}-${i}`);
     const selects = ids.map(id => document.getElementById(id));
     const values = selects.map(s => s.value);
-    
     selects.forEach((sel, idx) => {
         Array.from(sel.options).forEach(opt => {
             if(opt.value === "" || opt.dataset.self === "true") return;
-            
             let isTaken = values.some((v, vIdx) => vIdx !== idx && v === opt.value && v !== "");
-            opt.disabled = isTaken; 
-            opt.text = isTaken ? opt.dataset.text + " (已選)" : opt.dataset.text;
+            opt.disabled = isTaken; opt.text = isTaken ? opt.dataset.text + " (已選)" : opt.dataset.text;
         });
     });
 }
 
-// ==========================================
-// 2. 花藝實驗室邏輯 (修復版)
-// ==========================================
+// 花藝實驗室
+// --- 修正版：選單列表 (移除 CORS 限制，讓圖片顯示出來) ---
 function renderFlowerAssets() { 
-    const c = document.getElementById('asset-list'); 
-    c.innerHTML = ''; 
+    const c = document.getElementById('asset-list'); c.innerHTML = ''; 
     
     flowersData.forEach(f => { 
         const d = document.createElement('div'); 
@@ -150,6 +261,8 @@ function renderFlowerAssets() {
         d.className = `asset-item ${isSoldOut ? 'disabled' : ''}`; 
         if(!isSoldOut) d.onclick = () => addItem(f); 
         
+        // ⚠️ 修改這裡：拿掉 crossorigin="anonymous"
+        // 這樣圖片一定顯示得出來，不會破圖
         d.innerHTML = `
             <img src="${f.url||FALLBACK_ICON}" onerror="this.src='${FALLBACK_ICON}'">
             <div class="asset-info">
@@ -160,11 +273,9 @@ function renderFlowerAssets() {
     }); 
 }
 
+// --- 修正版：畫布物件 (保留 CORS 但加入防快取) ---
 function addItem(f) { 
-    // 檢查庫存
     if(usedFlowers[f.id] >= f.remaining) return alert("這個花材的庫存用完了喔！"); 
-    
-    // 檢查總上限 (6支)
     if (countTotal >= LIMIT_TOTAL) return alert(`花束最多只能選 ${LIMIT_TOTAL} 支喔！`);
     
     countTotal++;
@@ -174,26 +285,40 @@ function addItem(f) {
     el.className = 'draggable-item';
     el.dataset.id = f.id; 
     
-    // ⚠️ 關鍵修復：生成時直接設定層級，確保不被蓋住
+    // 點擊置頂邏輯
     el.style.zIndex = globalZIndex; 
 
     const img = document.createElement('img');
-    img.src = f.url || FALLBACK_ICON;
-    img.onerror = function(){ this.src = FALLBACK_ICON; this.onerror = null; };
+    
+    // ⚠️ 關鍵：畫布上的圖需要截圖，所以必須留著這行
+    img.crossOrigin = "anonymous";  
+
+    // ⚠️ 新增：加上時間參數，強制瀏覽器當作新圖片讀取，避免跟選單的圖片打架
+    // 檢查原本網址有沒有 '?'，有的話就加 '&'，沒有就加 '?'
+    const sep = (f.url && f.url.includes('?')) ? '&' : '?';
+    const safeUrl = (f.url || FALLBACK_ICON) + sep + 't=' + new Date().getTime();
+    
+    img.src = safeUrl;
+
+    img.onerror = function(){ 
+        // 如果加上 CORS 還是破圖，表示這個圖床真的不支援截圖
+        // 我們退回原圖顯示（至少看得到），但截圖可能會失敗
+        this.src = f.url || FALLBACK_ICON; 
+        this.crossOrigin = null; // 放棄跨域治療
+        this.onerror = null; 
+    };
+    
     el.appendChild(img);
     
-    // 隨機位置
+    // ... (後面的位置與雙擊刪除代碼保持不變) ...
     el.style.left = (Math.random() * 40 + 30) + '%';
     el.style.top = (Math.random() * 40 + 20) + '%';
     
-    if(!usedFlowers[f.id]) usedFlowers[f.id] = 0; 
-    usedFlowers[f.id]++;
+    if(!usedFlowers[f.id]) usedFlowers[f.id] = 0; usedFlowers[f.id]++;
     
-    // 雙擊刪除邏輯
     el.addEventListener('dblclick', function() {
         el.remove();
-        countTotal--; 
-        updateCounters();
+        countTotal--; updateCounters();
         usedFlowers[f.id]--;
         if(usedFlowers[f.id] <= 0) delete usedFlowers[f.id];
     });
@@ -203,92 +328,51 @@ function addItem(f) {
 }
 
 function updateCounters() {
-    const elTotal = document.getElementById('cnt-total');
-    elTotal.innerText = `目前數量: ${countTotal} / ${LIMIT_TOTAL}`;
+    document.getElementById('cnt-total').innerText = `目前數量: ${countTotal} / ${LIMIT_TOTAL}`;
 }
-a
-// 修改後的拖曳邏輯：點擊即置頂
+
 function makeDraggable(el){ 
     let isDragging = false;
     let startX, startY, initialLeft, initialTop;
-
     const start = (e) => {
-        // 1. 關鍵修改：只要「按下」或「觸碰」，不管有沒有移動，直接跳到最上層
-        globalZIndex++; 
-        el.style.zIndex = globalZIndex; 
-
+        globalZIndex++; el.style.zIndex = globalZIndex; 
         isDragging = true;
-        
-        // 取得滑鼠或手指座標
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        
-        startX = clientX; 
-        startY = clientY;
-        initialLeft = el.offsetLeft; 
-        initialTop = el.offsetTop;
-        
-        // 防止選取到圖片造成拖曳異常
+        startX = clientX; startY = clientY;
+        initialLeft = el.offsetLeft; initialTop = el.offsetTop;
         if (e.cancelable) e.preventDefault(); 
     };
-
     const move = (e) => {
         if(!isDragging) return;
-        
-        // 防止手機畫面跟著捲動
         if (e.cancelable) e.preventDefault();
-        
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        
-        const dx = clientX - startX; 
-        const dy = clientY - startY;
-        
-        el.style.left = (initialLeft + dx) + 'px'; 
-        el.style.top = (initialTop + dy) + 'px';
+        el.style.left = (initialLeft + clientX - startX) + 'px'; 
+        el.style.top = (initialTop + clientY - startY) + 'px';
     };
-
     const end = () => { isDragging = false; };
-
-    // 綁定事件
-    el.addEventListener('mousedown', start); 
-    el.addEventListener('touchstart', start, {passive: false});
-    
-    // 綁定在 document 上，避免拖太快滑鼠跑出元素外就失效
-    document.addEventListener('mousemove', move); 
-    document.addEventListener('touchmove', move, {passive: false});
-    
-    document.addEventListener('mouseup', end); 
-    document.addEventListener('touchend', end);
+    el.addEventListener('mousedown', start); el.addEventListener('touchstart', start, {passive: false});
+    document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive: false});
+    document.addEventListener('mouseup', end); document.addEventListener('touchend', end);
 }
 
 function clearCanvas(){
-    const canvas = document.getElementById('flower-canvas');
-    const items = canvas.querySelectorAll('.draggable-item');
-    items.forEach(i => i.remove());
-    
-    usedFlowers = {}; 
-    countTotal = 0; 
-    updateCounters();
+    document.querySelectorAll('.draggable-item').forEach(i => i.remove());
+    usedFlowers = {}; countTotal = 0; updateCounters();
 }
 
-// ==========================================
-// 3. 換頁與送出邏輯
-// ==========================================
 function toggleMethod(m){
     document.getElementById('opt-self').classList.toggle('active', m=='self');
     document.getElementById('opt-delivery').classList.toggle('active', m=='delivery');
     document.getElementById('block-self').classList.toggle('hidden', m!='self');
     document.getElementById('block-delivery').classList.toggle('hidden', m!='delivery');
-    
     currentMethod = m=='self' ? '自取' : '運送';
-    updatePrice();
-}
-
-function updatePrice() {
+    
+    // 更新價格顯示
     const priceEl = document.getElementById('total-price');
     const detailEl = document.getElementById('price-detail');
-    if (currentMethod === '運送') { 
+    if (m === 'delivery') { 
         priceEl.innerText = "850"; 
         detailEl.innerText = "(花束 $650 + 運費 $200)"; 
     } else { 
@@ -296,110 +380,3 @@ function updatePrice() {
         detailEl.innerText = "(花束 $650)"; 
     }
 }
-
-// 下一步 (截圖並切換頁面)
-document.getElementById('btn-next').onclick = async () => {
-    if (!myRole) return alert("請先選角色！");
-    
-    const ids = ['recv-1','recv-2','recv-3','give-1','give-2','give-3'];
-    for(let id of ids) { 
-        if(!document.getElementById(id).value) return alert("請將 3 個接收與 3 個贈送心願都選好喔！"); 
-    }
-    
-    const btn = document.getElementById('btn-next'); 
-    const txt = btn.innerText; 
-    btn.innerText = "💾 儲存設計..."; 
-    btn.disabled = true;
-    
-    try {
-        const capture = await html2canvas(document.getElementById('flower-canvas'), { scale: 2, useCORS: true });
-        savedImageBase64 = capture.toDataURL("image/png");
-        
-        document.getElementById('phase-game').classList.add('hidden');
-        document.getElementById('phase-info').classList.remove('hidden');
-        window.scrollTo(0,0);
-    } catch(e) { 
-        alert("截圖失敗，請重試"); 
-    } finally { 
-        btn.innerText = txt; 
-        btn.disabled = false; 
-    }
-};
-
-document.getElementById('btn-back').onclick = () => {
-    document.getElementById('phase-info').classList.add('hidden');
-    document.getElementById('phase-game').classList.remove('hidden');
-};
-
-// 最終送出
-document.getElementById('btn-submit').onclick = async () => {
-    const email = document.getElementById('email-input').value;
-    const phone = document.getElementById('phone-input').value;
-    const name = document.getElementById('name-input').value;
-    
-    let pTime = "", addr = "";
-    if (currentMethod === '自取') {
-        pTime = document.getElementById('self-time').value;
-        if(!pTime) return alert("請選擇自取時段！");
-        addr = "人性空間 (自取)";
-    } else {
-        pTime = document.getElementById('delivery-time').value;
-        addr = document.getElementById('delivery-address').value;
-        if(!addr) return alert("請輸入配送地址！");
-        if(!pTime) return alert("請選擇配送時段！");
-        if(!addr.includes("區")) return alert("地址請包含行政區名稱！");
-
-        // ⚠️ 檢查是否勾選配送確認框
-        const isZoneConfirmed = document.getElementById('zone-check').checked;
-        if(!isZoneConfirmed) {
-            return alert("⚠️ 請參考地圖，並勾選「我已確認收件地址位於橘色框線範圍內」才能送出喔！");
-        }
-    }
-
-    const bankCode = document.getElementById('pay-input').value;
-    if(!bankCode) return alert("請填寫匯款帳號末五碼！");
-    if(!email || !name || !phone) return alert("請填寫完整資料！");
-    
-    const subPref = document.querySelector('input[name="subPref"]:checked').value;
-
-    const btn = document.getElementById('btn-submit'); 
-    const txt = btn.innerText; 
-    btn.innerText = "🚀 傳送中..."; 
-    btn.disabled = true;
-
-    const postData = {
-        email, phone, roleId: myRole, ownerName: name,
-        receive_1: document.getElementById('recv-1').value,
-        receive_2: document.getElementById('recv-2').value,
-        receive_3: document.getElementById('recv-3').value,
-        give_1: document.getElementById('give-1').value,
-        give_2: document.getElementById('give-2').value,
-        give_3: document.getElementById('give-3').value,
-        message: document.getElementById('msg-input').value,
-        paymentInfo: "末五碼: " + bankCode,
-        imageBase64: savedImageBase64,
-        method: currentMethod, pickupTime: pTime, address: addr,
-        usedFlowers: usedFlowers,
-        subPref: subPref
-    };
-
-    try {
-        const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(postData) });
-        const result = await res.json();
-        
-        if(result.status === 'success') { 
-            // ⚠️ 更新成功訊息
-            alert("🎉 報名成功！\n\n請留意：訂花確認信將於 12/24 (三) 寄至您的 Email，謝謝參與！"); 
-            location.reload(); 
-        } else { 
-            alert("❌ 失敗：" + result.message); 
-            if(!result.message.includes("Email")) location.reload(); 
-        }
-    } catch(e) { 
-        console.error(e); 
-        alert("錯誤:"+e); 
-    } finally { 
-        btn.innerText = txt; 
-        btn.disabled = false; 
-    }
-};
