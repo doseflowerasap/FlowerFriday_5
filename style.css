@@ -46,7 +46,32 @@ h2 {
 .hidden { display: none !important; }
 
 /* --- 3. 開頭說明頁 (Intro) --- */
-.intro-text { font-size: 15px; color: #555; text-align: justify; margin-bottom: 20px; }
+/* --- 開頭說明文字 (大標題版) --- */
+.intro-text { 
+    text-align: center; 
+    padding: 10px;
+    border-bottom: 1px dashed #ddd; 
+    padding-bottom: 25px;
+    margin-bottom: 30px; 
+}
+
+/* 第一句大標題 */
+.intro-title {
+    font-size: 22px; /* 字體放大 */
+    font-weight: bold; /* 加粗 */
+    color: #c0392b; /* 改成聖誕紅，更顯眼 */
+    margin-bottom: 20px; /* 跟下面的內文拉開距離 */
+    letter-spacing: 1px;
+}
+
+/* 下面的內文 */
+.intro-text p {
+    font-size: 15px; 
+    color: #2c5e2e; /* 內文維持質感綠 */
+    line-height: 2.0; 
+    margin: 0;
+    font-weight: 500;
+}
 
 .intro-block { 
     background: #f9f9f9; 
@@ -223,7 +248,7 @@ h2 {
     text-align: justify;
 }
 
-/* --- 替代方案區塊 (Layout 修正版) --- */
+/* --- 替代方案區塊 (手機版面修正) --- */
 .pref-options {
     display: flex;
     flex-direction: column;
@@ -231,50 +256,53 @@ h2 {
 }
 
 .pref-options label {
-    display: flex;
+    display: flex; 
     align-items: center; /* 垂直置中 */
-    justify-content: flex-start; /* 整體內容靠左 */
+    justify-content: flex-start; /* 內容靠左 */
     
-    padding: 12px 10px; /* 上下內距 */
     width: 100%; 
+    padding: 12px 5px; /* 上下留白，左右稍微縮小避免太擠 */
     box-sizing: border-box;
     
     background: #fdfdfd;
     border: 2px solid #eee;
-    border-radius: 50px; /* 圓潤的按鈕 */
+    border-radius: 50px; /* 圓潤膠囊狀 */
     cursor: pointer;
     transition: all 0.2s ease;
     
-    font-size: 15px;
+    font-size: 14px; /* 手機上字體稍微調整 */
     color: #555;
     font-weight: 500;
+    overflow: hidden; /* 防止內容爆出去 */
 }
 
-/* 左邊：圓點區域 (佔約 15%~20% 寬度) */
+/* 1. 左邊圓點區：給它一個固定的寬度空間 (約 50px 或 15%) */
 .pref-options input[type="radio"] {
-    flex: 0 0 15%; /* ⚠️ 關鍵：固定左側寬度，讓圓點有自己的小隔間 */
+    flex: 0 0 50px; /* ⚠️ 關鍵：固定左側寬度，這是圓點的家 */
     margin: 0;
-    transform: scale(1.3); /* 圓點放大一點 */
-    accent-color: #c0392b; /* 圓點顏色 */
+    transform: scale(1.3); /* 圓點大一點 */
+    accent-color: #c0392b; 
     cursor: pointer;
+    
+    /* 讓圓點自己在 50px 的空間裡居中 */
     display: flex;
-    justify-content: center; /* 讓圓點在自己的 15% 空間內居中 */
+    justify-content: center; 
+    align-items: center;
 }
 
-/* 右邊：文字區域 (佔滿剩餘空間) */
+/* 2. 右邊文字區：佔滿剩下空間，且靠左、不換行 */
 .pref-options span {
-    flex: 1; /* 佔滿剩下的 85% */
-    text-align: left; /* ⚠️ 關鍵：文字靠左對齊 */
-    white-space: nowrap; /* ⚠️ 關鍵：強制不換行 (變成單行) */
-    padding-right: 10px; /* 右邊留點呼吸空間 */
+    flex: 1; /* 佔滿剩下的寬度 */
+    text-align: left; /* ⚠️ 關鍵：文字靠左對齊，緊鄰圓點區 */
+    white-space: nowrap; /* ⚠️ 關鍵：強制變成單行 */
+    padding-right: 15px; /* 右邊留點空間 */
+    
+    /* 如果手機螢幕真的太小，字太多時會變 ... */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* 狀態效果 */
-.pref-options label:hover {
-    background: #fafafa;
-    border-color: #ddd;
-}
-
+/* 選中狀態 */
 .pref-options label:has(input:checked) {
     background: #fff5f5;
     border-color: #c0392b;
@@ -385,4 +413,79 @@ select option:disabled { color: #ccc; background-color: #f5f5f5; }
 
 .blessing-note p:last-child {
     margin-bottom: 0; /* 最後一段不需要下方間距 */
+}
+
+/* --- 配送地圖與確認框 --- */
+.delivery-map-container {
+    margin: 15px 0;
+    text-align: center;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.delivery-map-container img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain; /* 確保圖片不變形，完整顯示 */
+    cursor: zoom-in;
+    border-radius: 4px;
+}
+
+/* --- 配送範圍確認框 (樣式同步化) --- */
+.zone-confirm {
+    display: flex; 
+    align-items: center; /* 垂直置中 */
+    justify-content: flex-start; /* 內容靠左 */
+    
+    width: 100%; 
+    padding: 12px 5px; /* 上下內距 */
+    box-sizing: border-box;
+    margin-top: 20px; /* 跟上面的欄位拉開距離 */
+    
+    background: #fdfdfd;
+    border: 2px solid #eee; /* 預設淺灰實線邊框 */
+    border-radius: 50px; /* 圓潤造型 */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+}
+
+/* 左邊：勾選框區域 (固定寬度，跟上面的圓點對齊) */
+.zone-confirm input {
+    flex: 0 0 50px; /* 固定佔用 50px */
+    margin: 0;
+    transform: scale(1.3); /* 放大勾選框 */
+    accent-color: #c0392b; 
+    cursor: pointer;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 右邊：文字區域 */
+.zone-confirm span {
+    flex: 1; /* 佔滿剩餘空間 */
+    text-align: left; /* 靠左對齊 */
+    padding-right: 15px;
+    line-height: 1.4;
+}
+
+/* 滑鼠移過去 */
+.zone-confirm:hover {
+    background: #fafafa;
+    border-color: #ddd;
+}
+
+/* 🔵 選中狀態 (變成主題紅) */
+.zone-confirm:has(input:checked) {
+    background: #fff5f5;
+    border-color: #c0392b;
+    color: #c0392b;
+    box-shadow: 0 2px 8px rgba(192, 57, 43, 0.15);
 }
