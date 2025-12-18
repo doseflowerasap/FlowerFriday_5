@@ -212,16 +212,22 @@ function initEventBindings() {
                 alert("🎉 報名成功！\n\n請留意：訂花確認信將於 12/24 (三) 寄至您的 Email，謝謝參與！"); 
                 location.reload(); 
             } else { 
-                alert("❌ 失敗：" + result.message); 
-                if(!result.message.includes("Email")) location.reload(); 
+                // ⚠️ 這裡處理失敗的情況
+                alert("❌ 提交失敗：\n" + result.message); 
+                
+                // 如果是因為被搶走 (根據後端回傳的訊息判斷)，重新整理頁面讓使用者重選
+                if(result.message.includes("被其他人選走")) {
+                    location.reload(); // 重新整理，更新最新的角色狀態
+                }
             }
         } catch(e) { 
             console.error(e); 
-            alert("錯誤:"+e); 
+            alert("網路錯誤或系統異常，請稍後再試。"); 
         } finally { 
             btn.innerText = txt; 
             btn.disabled = false; 
         }
+// ... 後面省略 ...
     };
 }
 
