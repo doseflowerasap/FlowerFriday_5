@@ -131,7 +131,7 @@
         </section>
 
         <section>
-            <h2>4. 寫下祝福</h2>
+            <h2>4. 寫下祝福 <span style="font-size:15px; color:#c0392b; vertical-align: middle;">(必填)</span></h2>
             <div class="form-group">
                 <textarea id="msg-input" rows="6" placeholder="寫下暖心的話..."></textarea>
                 
@@ -153,6 +153,7 @@
                 <label class="radio-option active" id="opt-self" onclick="toggleMethod('self')"><input type="radio" name="deliveryMethod" value="自取" checked> 🏢 人性空間自取</label>
                 <label class="radio-option" id="opt-delivery" onclick="toggleMethod('delivery')"><input type="radio" name="deliveryMethod" value="運送"> 🚚 專車運送 (+200)</label>
             </div>
+            
             <div id="block-self" class="method-block">
                 <div class="form-group">
                     <label>預計自取時段 (12/26)：</label>
@@ -167,11 +168,21 @@
                         <option value="12/26 19:00-19:30">19:00-19:30</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>地點：人性空間 (公館)</label>
-                    <div class="map-container"><iframe src="https://maps.google.com/maps?q=人性空間公館&t=&z=16&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe></div>
+                
+                <div style="font-size:14px; color:#555; background:#eafaf1; padding:10px; border-radius:8px; margin-top:10px;">
+                    📍 <strong>地點：人性空間 (公館店)</strong><br>
+                    台北市中正區羅斯福路三段286巷4弄1號<br>
+                    
+                    <div style="margin-top:8px; color:#c0392b; font-weight:bold; font-size:13px; line-height: 1.5;">
+                        ⚠️ 採無接觸取花，具體的取花流程會寫在訂花確認信中。
+                    </div>
+                </div>
+                
+                <div class="map-container" style="margin-top:15px;">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3615.536298749034!2d121.5295334116263!3d25.015867738927653!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442a98b9b1e8b3f%3A0xfc84591eb30f101d!2sHuman%20Space%20Roosevelt!5e0!3m2!1sen!2stw!4v1766030949572!5m2!1sen!2stw" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
                 </div>
             </div>
+
             <div id="block-delivery" class="method-block hidden">
                 <div class="warning-text">⚠️ 司機抵達會電話聯繫，請務必在電話後 15 分鐘內取貨！</div>
                 
@@ -219,6 +230,11 @@
             </div>
             <div class="bank-info">銀行：<strong>國泰世華 (013)</strong><br>帳號：<strong>105501316365</strong><br>備註請填：<strong>FlowerFriday 5</strong></div>
             <div class="form-group"><label>匯款帳號末五碼：</label><input type="text" id="pay-input" placeholder="請輸入末五碼"></div>
+
+            <div class="form-group" style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd;">
+                <label>💬 任何其他想讓我們知道的事情 (選填)</label>
+                <textarea id="note-input" rows="3" placeholder="有什麼悄悄話想對主辦說嗎？" style="resize: vertical;"></textarea>
+            </div>
         </section>
 
         <div class="btn-group">

@@ -1,25 +1,24 @@
 // ==========================================
-    // ⚠️ 設定區
-    // ==========================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbxyobOzz0lMOeSkvfOg2sR4IsNzM2MFTbNUHtIkxZZwO8aIZ3B9OflAUlRqRdqrJFtHwQ/exec"; 
-    const FALLBACK_ICON = "https://placehold.co/80x80/eee/999?text=🌸";
+// ⚠️ 設定區
+// ==========================================
+const API_URL = "https://script.google.com/macros/s/AKfycbxyobOzz0lMOeSkvfOg2sR4IsNzM2MFTbNUHtIkxZZwO8aIZ3B9OflAUlRqRdqrJFtHwQ/exec";
+const FALLBACK_ICON = "https://placehold.co/80x80/eee/999?text=🌸";
 
-    // 12隻動物
-    // 12隻動物設定 (修改版：使用自訂圖片)
-    const CHARACTER_DESC = [
-        { id: 'rabbit', imgUrl: 'icon/rabbit.png', name: '固執的兔子', desc: '有藍色眼睛，不喜歡吃超過八公分的胡蘿蔔，喜歡在雲層很厚的時候上廁所，無聊的時候喜歡算塔羅。' },
-        { id: 'lion', imgUrl: 'icon/lion.png', name: '浪漫的獅子', desc: '有著比大部分獅子長的尾巴。喜歡在樹下乘涼，在乘涼的時候喜歡寫詩，但不會拿筆。' },
-        { id: 'cat', imgUrl: 'icon/cat.png', name: '機靈的小貓', desc: '有著灰黑色的大理石紋、銳利的眼神，是剛出生不久的貓咪寶寶。最喜歡吃的食物是鮭魚，夢想是可以跳到獅子愛乘涼的樹上，然後從樹上往下看他。' },
-        { id: 'elephant', imgUrl: 'icon/elephant.png', name: '無憂無慮的大象', desc: '生性樂觀、沒有煩惱，所有的動物都喜歡找他談心，但是天生只有三隻腳。有個沒動物知道的秘密是會背九九乘法表。' },
-        { id: 'owl', imgUrl: 'icon/owl.png', name: '少一根筋的貓頭鷹', desc: '長得很帥、喜歡吃辣。最喜歡睡覺的地方是兔子窩邊，如果沒不小心飛錯的話。' },
-        { id: 'penguin', imgUrl: 'icon/penguin.png', name: '熱愛環保的企鵝', desc: '不會游泳、走路很慢。興趣是發明好吃的素食菜單，希望菜單可以獲得固執兔子的認可，也希望有一天可以看到沒有垃圾的海灘。' },
-        { id: 'koala', imgUrl: 'icon/koala.png', name: '愛睏無尾熊', desc: '一天要睡20個小時，醒著的時候都在發呆，好像很長壽，沒有動物知道他活了多久。' },
-        { id: 'bear', imgUrl: 'icon/bear.png', name: '暖男大熊', desc: '有著灰棕色的毛，冬天會準備很多蜂蜜茶請大家喝。' },
-        { id: 'elk', imgUrl: 'icon/elk.png', name: '容易迷路的麋鹿', desc: '角很大、方向感很差。常常一邊走一邊懷疑自己是不是走錯人生，喜歡在凌晨幫別的動物掛上聖誕燈。' },
-        { id: 'bat', imgUrl: 'icon/bat.png', name: '我行我素的蝙蝠', desc: '討厭白天，也不太回訊息。對聲音特別敏感，能分辨祝福是真心還是客套。習慣在別的動物都安靜下來之後才出現。' },
-        { id: 'hedgehog', imgUrl: 'icon/hedgehog.png', name: '記性很好的刺蝟', desc: '身上總是插著幾根彎掉的刺，不太擅長擁抱，但會記得每個動物喝咖啡的順序。' },
-        { id: 'otter', imgUrl: 'icon/otter.png', name: '強迫症晚期海獺', desc: '會把漂在水面的雜物一一排好，連石頭都有固定的位置。別的動物找不到東西時，通常最後都會來問他。' }
-    ];
+// 12隻動物設定
+const CHARACTER_DESC = [
+    { id: 'rabbit', imgUrl: 'icon/rabbit.png', name: '固執的兔子', desc: '有藍色眼睛，不喜歡吃超過八公分的胡蘿蔔，喜歡在雲層很厚的時候上廁所，無聊的時候喜歡算塔羅。' },
+    { id: 'lion', imgUrl: 'icon/lion.png', name: '浪漫的獅子', desc: '有著比大部分獅子長的尾巴。喜歡在樹下乘涼，在乘涼的時候喜歡寫詩，但不會拿筆。' },
+    { id: 'cat', imgUrl: 'icon/cat.png', name: '機靈的小貓', desc: '有著灰黑色的大理石紋、銳利的眼神，是剛出生不久的貓咪寶寶。最喜歡吃的食物是鮭魚，夢想是可以跳到獅子愛乘涼的樹上，然後從樹上往下看他。' },
+    { id: 'elephant', imgUrl: 'icon/elephant.png', name: '無憂無慮的大象', desc: '生性樂觀、沒有煩惱，所有的動物都喜歡找他談心，但是天生只有三隻腳。有個沒動物知道的秘密是會背九九乘法表。' },
+    { id: 'owl', imgUrl: 'icon/owl.png', name: '少一根筋的貓頭鷹', desc: '長得很帥、喜歡吃辣。最喜歡睡覺的地方是兔子窩邊，如果沒不小心飛錯的話。' },
+    { id: 'penguin', imgUrl: 'icon/penguin.png', name: '熱愛環保的企鵝', desc: '不會游泳、走路很慢。興趣是發明好吃的素食菜單，希望菜單可以獲得固執兔子的認可，也希望有一天可以看到沒有垃圾的海灘。' },
+    { id: 'koala', imgUrl: 'icon/koala.png', name: '愛睏無尾熊', desc: '一天要睡20個小時，醒著的時候都在發呆，好像很長壽，沒有動物知道他活了多久。' },
+    { id: 'bear', imgUrl: 'icon/bear.png', name: '暖男大熊', desc: '有著灰棕色的毛，冬天會準備很多蜂蜜茶請大家喝。' },
+    { id: 'elk', imgUrl: 'icon/elk.png', name: '容易迷路的麋鹿', desc: '角很大、方向感很差。常常一邊走一邊懷疑自己是不是走錯人生，喜歡在凌晨幫別的動物掛上聖誕燈。' },
+    { id: 'bat', imgUrl: 'icon/bat.png', name: '我行我素的蝙蝠', desc: '討厭白天，也不太回訊息。對聲音特別敏感，能分辨祝福是真心還是客套。習慣在別的動物都安靜下來之後才出現。' },
+    { id: 'hedgehog', imgUrl: 'icon/hedgehog.png', name: '記性很好的刺蝟', desc: '身上總是插著幾根彎掉的刺，不太擅長擁抱，但會記得每個動物喝咖啡的順序。' },
+    { id: 'otter', imgUrl: 'icon/otter.png', name: '強迫症晚期海獺', desc: '會把漂在水面的雜物一一排好，連石頭都有固定的位置。別的動物找不到東西時，通常最後都會來問他。' }
+];
 
 // ==========================================
 // 全域變數
@@ -32,12 +31,12 @@ let countTotal = 0;
 const LIMIT_TOTAL = 6;
 
 // ==========================================
-// 🚀 核心：網頁載入後才執行 (修正按鈕沒反應的主因)
+// 🚀 核心：網頁載入後才執行
 // ==========================================
 window.onload = async function() {
     console.log("網頁載入完成，開始初始化...");
     
-    // 1. 先綁定所有按鈕事件 (確保按鈕一定有反應)
+    // 1. 先綁定所有按鈕事件
     initEventBindings();
 
     // 2. 讀取 Google Sheet 資料
@@ -57,7 +56,7 @@ window.onload = async function() {
 };
 
 // ==========================================
-// 按鈕事件綁定區 (集中管理)
+// 按鈕事件綁定區
 // ==========================================
 function initEventBindings() {
     
@@ -69,36 +68,56 @@ function initEventBindings() {
         window.scrollTo(0,0);
     };
 
-    // 🔄 下一步：截圖並跳轉 (如果這裡沒反應，通常是 html2canvas 沒載入)
+    // 🔄 下一步：截圖並跳轉
     const btnNext = document.getElementById('btn-next');
     if(btnNext) btnNext.onclick = async () => {
-        // ... (驗證邏輯省略，保持原本的) ...
+        
+        // 1. 驗證角色
+        if (!myRole) return alert("⚠️ 請滑到最上面，先選擇您的「動物角色」喔！");
+        
+        // 2. 驗證志願序
+        const ids = ['recv-1','recv-2','recv-3','give-1','give-2','give-3'];
+        for(let id of ids) { 
+            if(!document.getElementById(id).value) return alert("⚠️ 請將 3 個接收與 3 個贈送心願都選好喔！"); 
+        }
 
+        // 3. 驗證祝福語
+        const msgInput = document.getElementById('msg-input');
+        const msgVal = msgInput.value.trim();
+
+        if (!msgVal) {
+            alert("⚠️ 提醒您：\n\n第 4 步驟的「祝福語」還沒寫喔！\n這段話很重要，請寫下一些祝福再繼續吧～");
+            msgInput.focus(); 
+            return;
+        }
+
+        // 4. 截圖
+        if(typeof html2canvas === 'undefined') {
+            return alert("❌ 系統錯誤：找不到截圖工具 (html2canvas)。");
+        }
+        
         const btn = document.getElementById('btn-next'); 
         const txt = btn.innerText; 
         btn.innerText = "💾 儲存設計..."; 
         btn.disabled = true;
         
         try {
-            // 截圖設定：針對本地圖片
             const capture = await html2canvas(document.getElementById('flower-canvas'), { 
                 scale: 2, 
-                // 雖然是相對路徑，加著這行通常沒壞處，或是拿掉也可以
                 useCORS: true 
             });
-            
-            // 這次應該會成功了！
             savedImageBase64 = capture.toDataURL("image/png");
             
-        } catch(e) { 
-            console.warn("截圖發生錯誤:", e);
-            // 如果真的還是失敗，至少讓流程繼續，不要卡死
-            savedImageBase64 = null; 
-        } finally { 
             document.getElementById('phase-game').classList.add('hidden');
             document.getElementById('phase-info').classList.remove('hidden');
             window.scrollTo(0,0);
-            
+        } catch(e) { 
+            console.warn("截圖失敗:", e);
+            savedImageBase64 = null; 
+            document.getElementById('phase-game').classList.add('hidden');
+            document.getElementById('phase-info').classList.remove('hidden');
+            window.scrollTo(0,0);
+        } finally { 
             btn.innerText = txt; 
             btn.disabled = false; 
         }
@@ -130,7 +149,6 @@ function initEventBindings() {
             if(!pTime) return alert("請選擇配送時段！");
             if(!addr.includes("區")) return alert("地址請包含行政區名稱！");
 
-            // 檢查配送確認勾選
             const isZoneConfirmed = document.getElementById('zone-check').checked;
             if(!isZoneConfirmed) {
                 return alert("⚠️ 請參考地圖，並勾選「我已確認收件地址位於橘色框線範圍內」才能送出喔！");
@@ -141,7 +159,6 @@ function initEventBindings() {
         if(!bankCode) return alert("請填寫匯款帳號末五碼！");
         if(!email || !name || !phone) return alert("請填寫完整資料！");
         
-        // 取得替代方案 (Radio)
         const subPrefEl = document.querySelector('input[name="subPref"]:checked');
         const subPref = subPrefEl ? subPrefEl.value : "未選擇";
 
@@ -188,7 +205,7 @@ function initEventBindings() {
 }
 
 // ==========================================
-// 邏輯函式 (保持不變)
+// 邏輯函式
 // ==========================================
 function renderRoleList(sheetData) {
     const container = document.getElementById('role-list'); container.innerHTML = '';
@@ -242,8 +259,6 @@ function updateWishes(type) {
     });
 }
 
-// 花藝實驗室
-// --- 修正版：選單列表 (移除 CORS 限制，讓圖片顯示出來) ---
 function renderFlowerAssets() { 
     const c = document.getElementById('asset-list'); c.innerHTML = ''; 
     
@@ -254,8 +269,6 @@ function renderFlowerAssets() {
         d.className = `asset-item ${isSoldOut ? 'disabled' : ''}`; 
         if(!isSoldOut) d.onclick = () => addItem(f); 
         
-        // ⚠️ 修改這裡：拿掉 crossorigin="anonymous"
-        // 這樣圖片一定顯示得出來，不會破圖
         d.innerHTML = `
             <img src="${f.url||FALLBACK_ICON}" onerror="this.src='${FALLBACK_ICON}'">
             <div class="asset-info">
@@ -266,7 +279,7 @@ function renderFlowerAssets() {
     }); 
 }
 
-// --- 修正版：addItem (針對相對路徑的最佳化) ---
+// ⚠️ 重要修改：addItem 現在會呼叫 addPinchZoom
 function addItem(f) { 
     if(usedFlowers[f.id] >= f.remaining) return alert("這個花材的庫存用完了喔！"); 
     if (countTotal >= LIMIT_TOTAL) return alert(`花束最多只能選 ${LIMIT_TOTAL} 支喔！`);
@@ -278,15 +291,9 @@ function addItem(f) {
     el.className = 'draggable-item';
     el.dataset.id = f.id; 
     
-    // 點擊置頂
     el.style.zIndex = globalZIndex; 
 
     const img = document.createElement('img');
-    
-    // ⚠️ 修改重點：
-    // 1. 拿掉 img.crossOrigin = "anonymous"; (自己家的圖不用這行)
-    // 2. 拿掉時間戳記 (不用 ?t=...)
-    // 3. 直接讀取路徑即可
     img.src = f.url || FALLBACK_ICON;
     
     img.onerror = function(){ 
@@ -308,7 +315,12 @@ function addItem(f) {
         if(usedFlowers[f.id] <= 0) delete usedFlowers[f.id];
     });
 
+    // 1. 先加入基本拖曳功能
     makeDraggable(el);
+    
+    // 2. ⚠️ 新增：加入雙指縮放功能
+    addPinchZoom(el);
+
     document.getElementById('flower-canvas').appendChild(el); 
 }
 
@@ -316,10 +328,15 @@ function updateCounters() {
     document.getElementById('cnt-total').innerText = `目前數量: ${countTotal} / ${LIMIT_TOTAL}`;
 }
 
+// ⚠️ 重要修改：加入防止多指觸控時干擾拖曳的檢查
 function makeDraggable(el){ 
     let isDragging = false;
     let startX, startY, initialLeft, initialTop;
+    
     const start = (e) => {
+        // 如果是兩指操作（準備縮放），就不啟動拖曳
+        if (e.touches && e.touches.length > 1) return;
+
         globalZIndex++; el.style.zIndex = globalZIndex; 
         isDragging = true;
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -328,15 +345,21 @@ function makeDraggable(el){
         initialLeft = el.offsetLeft; initialTop = el.offsetTop;
         if (e.cancelable) e.preventDefault(); 
     };
+    
     const move = (e) => {
         if(!isDragging) return;
+        // 如果中途變成兩指（開始縮放），停止拖曳更新
+        if (e.touches && e.touches.length > 1) return;
+
         if (e.cancelable) e.preventDefault();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
         const clientY = e.touches ? e.touches[0].clientY : e.clientY;
         el.style.left = (initialLeft + clientX - startX) + 'px'; 
         el.style.top = (initialTop + clientY - startY) + 'px';
     };
+    
     const end = () => { isDragging = false; };
+    
     el.addEventListener('mousedown', start); el.addEventListener('touchstart', start, {passive: false});
     document.addEventListener('mousemove', move); document.addEventListener('touchmove', move, {passive: false});
     document.addEventListener('mouseup', end); document.addEventListener('touchend', end);
@@ -354,7 +377,6 @@ function toggleMethod(m){
     document.getElementById('block-delivery').classList.toggle('hidden', m!='delivery');
     currentMethod = m=='self' ? '自取' : '運送';
     
-    // 更新價格顯示
     const priceEl = document.getElementById('total-price');
     const detailEl = document.getElementById('price-detail');
     if (m === 'delivery') { 
@@ -363,5 +385,65 @@ function toggleMethod(m){
     } else { 
         priceEl.innerText = "650"; 
         detailEl.innerText = "(花束 $650)"; 
+    }
+}
+
+// ==========================================
+// 🔎 雙指縮放 (Pinch to Zoom) 邏輯區
+// ==========================================
+function addPinchZoom(element) {
+    let initialDistance = 0;
+    let initialScale = 1;
+    let currentScale = 1;
+
+    // 1. 手指放上去 (Touch Start)
+    element.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 2) {
+            e.preventDefault(); 
+            initialDistance = getDistance(e.touches[0], e.touches[1]);
+            
+            // 讀取目前的 scale
+            const currentTransform = window.getComputedStyle(element).transform;
+            initialScale = getScaleFromTransform(currentTransform) || 1;
+        }
+    }, { passive: false });
+
+    // 2. 手指移動 (Touch Move)
+    element.addEventListener('touchmove', function(e) {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+
+            const newDistance = getDistance(e.touches[0], e.touches[1]);
+            const scaleFactor = newDistance / initialDistance;
+            currentScale = initialScale * scaleFactor;
+
+            // 限制縮放範圍 (0.5x ~ 3x)
+            currentScale = Math.min(Math.max(0.5, currentScale), 3);
+
+            updateElementTransform(element, currentScale);
+        }
+    }, { passive: false });
+}
+
+// 計算兩點距離
+function getDistance(touch1, touch2) {
+    return Math.hypot(touch1.pageX - touch2.pageX, touch1.pageY - touch2.pageY);
+}
+
+// 解析目前的 scale 值
+function getScaleFromTransform(transformValue) {
+    if (transformValue === 'none') return 1;
+    const matrix = new DOMMatrix(transformValue);
+    return matrix.a; 
+}
+
+// 更新 CSS Transform (只更新 scale，保留位移)
+function updateElementTransform(element, newScale) {
+    let currentTransform = element.style.transform;
+    
+    if (!currentTransform.includes('scale')) {
+        element.style.transform = `${currentTransform} scale(${newScale})`;
+    } else {
+        element.style.transform = currentTransform.replace(/scale\([0-9.]+\)/, `scale(${newScale})`);
     }
 }
