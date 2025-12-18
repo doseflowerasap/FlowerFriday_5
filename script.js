@@ -60,6 +60,27 @@ window.onload = async function() {
 // ==========================================
 function initEventBindings() {
     
+    // ⚠️ 新增功能：點擊包裝紙三角形，讓它浮到最上層
+    // 請確保 HTML 裡的三角形圖片或 div 有 id="wrapping-paper"
+    const wrapper = document.getElementById('wrapping-paper');
+    if(wrapper) {
+        // 設定點擊事件
+        wrapper.onclick = (e) => {
+            // 阻止事件冒泡（避免誤觸其他背景事件）
+            e.stopPropagation();
+            // 增加全域層級
+            globalZIndex++;
+            // 設定包裝紙為最高層級
+            wrapper.style.zIndex = globalZIndex;
+            console.log("包裝紙已移至最上層 (z-index: " + globalZIndex + ")");
+        };
+        
+        // 為了讓使用者知道可以點，加個手型游標
+        wrapper.style.cursor = 'pointer';
+        // 確保它有相對定位或絕對定位，z-index 才會生效
+        // wrapper.style.position = 'absolute'; // 如果 CSS 已經寫了這行可以註解掉
+    }
+
     // 開場按鈕
     const btnStart = document.getElementById('btn-start');
     if(btnStart) btnStart.onclick = () => {
@@ -279,7 +300,6 @@ function renderFlowerAssets() {
     }); 
 }
 
-// ⚠️ 重要修改：addItem 現在會呼叫 addPinchZoom
 function addItem(f) { 
     if(usedFlowers[f.id] >= f.remaining) return alert("這個花材的庫存用完了喔！"); 
     if (countTotal >= LIMIT_TOTAL) return alert(`花束最多只能選 ${LIMIT_TOTAL} 支喔！`);
@@ -315,10 +335,7 @@ function addItem(f) {
         if(usedFlowers[f.id] <= 0) delete usedFlowers[f.id];
     });
 
-    // 1. 先加入基本拖曳功能
     makeDraggable(el);
-    
-    // 2. ⚠️ 新增：加入雙指縮放功能
     addPinchZoom(el);
 
     document.getElementById('flower-canvas').appendChild(el); 
@@ -328,7 +345,6 @@ function updateCounters() {
     document.getElementById('cnt-total').innerText = `目前數量: ${countTotal} / ${LIMIT_TOTAL}`;
 }
 
-// ⚠️ 重要修改：加入防止多指觸控時干擾拖曳的檢查
 function makeDraggable(el){ 
     let isDragging = false;
     let startX, startY, initialLeft, initialTop;
@@ -348,7 +364,6 @@ function makeDraggable(el){
     
     const move = (e) => {
         if(!isDragging) return;
-        // 如果中途變成兩指（開始縮放），停止拖曳更新
         if (e.touches && e.touches.length > 1) return;
 
         if (e.cancelable) e.preventDefault();
@@ -402,7 +417,6 @@ function addPinchZoom(element) {
             e.preventDefault(); 
             initialDistance = getDistance(e.touches[0], e.touches[1]);
             
-            // 讀取目前的 scale
             const currentTransform = window.getComputedStyle(element).transform;
             initialScale = getScaleFromTransform(currentTransform) || 1;
         }
@@ -417,7 +431,6 @@ function addPinchZoom(element) {
             const scaleFactor = newDistance / initialDistance;
             currentScale = initialScale * scaleFactor;
 
-            // 限制縮放範圍 (0.5x ~ 3x)
             currentScale = Math.min(Math.max(0.5, currentScale), 3);
 
             updateElementTransform(element, currentScale);
@@ -425,19 +438,16 @@ function addPinchZoom(element) {
     }, { passive: false });
 }
 
-// 計算兩點距離
 function getDistance(touch1, touch2) {
     return Math.hypot(touch1.pageX - touch2.pageX, touch1.pageY - touch2.pageY);
 }
 
-// 解析目前的 scale 值
 function getScaleFromTransform(transformValue) {
     if (transformValue === 'none') return 1;
     const matrix = new DOMMatrix(transformValue);
     return matrix.a; 
 }
 
-// 更新 CSS Transform (只更新 scale，保留位移)
 function updateElementTransform(element, newScale) {
     let currentTransform = element.style.transform;
     
